@@ -1,0 +1,81 @@
+engine: V2
+schema: 2
+name: Enter a forecast for pet passports
+startPage: /start
+options:
+  showReferenceNumber: false
+  disableUserFeedback: true
+sections:
+  - name: practice
+    title: Veterinary practice
+    hideTitle: true
+    id: 2f3a4b5c-6d7e-4890-a123-456789abcdef
+  - name: estimate
+    title: Estimate
+    hideTitle: true
+    id: 3a4b5c6d-7e8f-4901-a234-56789abcdef0
+pages:
+  - id: 4b5c6d7e-8f90-4a12-b345-6789abcdef01
+    title: Tell us how many pets you issued animal health certificates for in the last year
+    path: /start
+    controller: StartPageController
+    components:
+      - name: introduction
+        title: Introduction
+        type: Html
+        content: |
+          <p class="govuk-body">Tell us how many pets you issued animal health certificates for in the last year.</p>
+          <p class="govuk-body">This will help us plan for demand for new EU pet passports.</p>
+          <h2 class="govuk-heading-s">What information you can use for the estimate</h2>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>How many animal health certificates your vet practice has issued over the last 12 months, for cats, dogs or ferrets</li>
+            <li>How many cats, dogs and ferrets are registered with your practice</li>
+          </ul>
+
+  - id: 5c6d7e8f-9012-4b34-c567-89abcdef0123
+    title: Which veterinary practice is this for?
+    path: /select-practice
+    section: 2f3a4b5c-6d7e-4890-a123-456789abcdef
+    components:
+      - id: 6d7e8f90-1234-4c56-d789-abcdef012345
+        name: veterinaryPractice
+        title: Which veterinary practice is this for?
+        type: RadiosField
+        list: 7e8f9012-3456-4d78-e9ab-cdef01234567
+        options:
+          required: true
+
+  - id: 8f901234-5678-4e9a-bcde-f0123456789a
+    title: How many pets did you issue animal health certificates for in the last year?
+    path: /enter-estimate
+    section: 3a4b5c6d-7e8f-4901-a234-56789abcdef0
+    components:
+      - name: petsIssuedCertificates
+        title: How many pets did you issue animal health certificates for in the last year?
+        type: NumberField
+        options:
+          required: true
+          customValidationMessage: Enter the number of pets you issued animal health certificates for
+
+  - id: 90123456-789a-4bcd-ef01-23456789abcd
+    title: Check your answers
+    path: /summary
+    controller: SummaryPageController
+
+lists:
+  - id: 7e8f9012-3456-4d78-e9ab-cdef01234567
+    name: veterinaryPracticeList
+    title: Veterinary practices
+    type: string
+    items:
+      - id: a1234567-89ab-4cde-8012-3456789abcde
+        text: Vet Franchise 1, 14 Willowbrook Crescent, Harton, Newcastle, NE9 7ZX
+        value: vet-franchise-1
+      - id: b2345678-9abc-4def-8123-456789abcdef
+        text: Vet Franchise 2, Unit 3, 88 Kingsway Gardens, Redbridge, London, E12 6QP
+        value: vet-franchise-2
+      - id: c3456789-abcd-4ef0-9234-56789abcdef0
+        text: Vet Franchise 3, 27 Meadow Lane, Westbrook, Manchester, M21 4RD
+        value: vet-franchise-3
+
+conditions: []

@@ -1,0 +1,100 @@
+engine: V2
+schema: 2
+name: EU pet passports
+startPage: /start
+sections: []
+conditions: []
+pages:
+  - id: 3d4e5f60-7182-4394-a5b6-c7d8e9f01234
+    title: EU pet passports
+    path: /start
+    controller: StartPageController
+    components:
+      - name: introduction
+        title: Introduction
+        type: Html
+        content: |
+          <p class="govuk-body">From [Date], anyone in England, Scotland and Wales must have an EU pet passport to take a cat, dog or ferret to an <a class="govuk-link" href="https://www.gov.uk/eu-eea">EU country</a>.</p>
+          <p class="govuk-body">You can only get an EU pet passport from an <a class="govuk-link" href="https://www.gov.uk/government/collections/official-veterinarians-ovs-and-ov-practices-forms-and-guidance">Official Veterinarian (OV)</a>.</p>
+          <div class="govuk-inset-text">There are different rules if you're travelling to <a class="govuk-link" href="https://www.gov.uk/taking-your-pet-abroad/travelling-to-northern-ireland">Northern Ireland</a> or a <a class="govuk-link" href="https://www.gov.uk/taking-your-pet-abroad/travelling-to-a-non-eu-country">non-EU country</a>.</div>
+
+          <h2 class="govuk-heading-m">Guidance for pet owners</h2>
+          <p class="govuk-body">You must have a valid EU pet passport before taking your pet dog, cat or ferret to an EU country. An Official Veterinarian (OV) can issue a passport before you travel.</p>
+          <p class="govuk-body"><a class="govuk-link" href="https://www.gov.uk/taking-your-pet-abroad">Taking your pet dog, cat or ferret abroad</a></p>
+
+          <h2 class="govuk-heading-m">Guidance for Official Veterinarians (OVs) and veterinary practices</h2>
+          <p class="govuk-body">Veterinary practices are responsible for ordering and issuing pet passports to pet owners.</p>
+          <p class="govuk-body">Records of any pet passports issued must be kept for 3 years.</p>
+
+          <h3 class="govuk-heading-s">Order pet passports</h3>
+          <p class="govuk-body">Vet practices can order passports in packs of 20. Find out how to:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li><a class="govuk-link" href="/order-pet-passports/start">order pet passports</a></li>
+            <li>view your order history</li>
+          </ul>
+
+          <h3 class="govuk-heading-s">Help us plan for demand for EU pet passports</h3>
+          <p class="govuk-body"><a class="govuk-link" href="/pet-passports-forecasting/start">Tell us how many animal health certificates you issued in the last year</a>, to help us plan for new EU pet passports.</p>
+
+          <h3 class="govuk-heading-s">Report a damaged, destroyed, lost or incorrectly completed pet passport</h3>
+          <p class="govuk-body"><a class="govuk-link" href="/report-pet-passport-damage/start">Report a damaged, destroyed, lost or incorrectly completed pet passport</a> to keep passport records accurate and up to date.</p>
+
+          <h3 class="govuk-heading-s">Register a pet passport to a pet</h3>
+          <p class="govuk-body">Register a pet passport to the microchip number of a cat, dog or ferret. You can also manage pet passport records to see passports that have been registered.</p>
+
+  - id: 4e5f6071-8293-4a5b-b6c7-d8e9f0123456
+    title: How do you want to sign in?
+    path: /sign-in
+    components:
+      - id: 5f607182-93a4-4b5c-8d9e-f0123456789a
+        name: signInMethod
+        title: How do you want to sign in?
+        type: RadiosField
+        list: 60718293-a4b5-4c6d-8e9f-0123456789ab
+        options:
+          required: true
+          customValidationMessage: Select how you want to sign in
+
+  - id: 718293a4-b5c6-4d7e-8f01-23456789abcd
+    title: Your Defra account
+    path: /your-defra-account
+    components:
+      - name: accountServices
+        title: Account services
+        type: Html
+        content: |
+          <p class="govuk-body">You have signed out. To sign in again, go to <a class="govuk-link" href="https://www.gov.uk/guidance/defra-account">Your Defra account</a>.</p>
+          <p class="govuk-body">To continue registering for online services from Defra and related organisations, select a service below:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li><a class="govuk-link" href="#">Apply for a CITES Permit</a></li>
+            <li><a class="govuk-link" href="#">Apply for and manage environmental permissions</a></li>
+            <li><a class="govuk-link" href="#">Apply for Plant Export Certificates and Inspections</a></li>
+            <li><a class="govuk-link" href="#">Biodiversity Net Gain</a></li>
+            <li><a class="govuk-link" href="#">Certifier Service</a></li>
+            <li><a class="govuk-link" href="#">Comply with UK REACH</a></li>
+            <li><a class="govuk-link" href="#">Exporter Service</a></li>
+            <li><a class="govuk-link" href="#">Fish Exports Service</a></li>
+            <li><a class="govuk-link" href="#">Get Permission For Marine Work</a></li>
+            <li><a class="govuk-link" href="#">IPAFFS</a></li>
+            <li><a class="govuk-link" href="#">Nutrient Management Planning</a></li>
+            <li><a class="govuk-link" href="#">Record reprocessed or exported packaging waste</a></li>
+            <li><a class="govuk-link" href="#">Report receipt of waste</a></li>
+            <li><a class="govuk-link" href="#">Order pet passports</a></li>
+          </ul>
+
+lists:
+  - id: 60718293-a4b5-4c6d-8e9f-0123456789ab
+    name: signInMethodList
+    title: Sign in options
+    type: string
+    items:
+      - id: 8293a4b5-c6d7-4e8f-9012-3456789abcde
+        text: Sign in with GOV.UK One Login
+        value: gov-uk-one-login
+        hint:
+          text: Use your email and password. If you don't have a GOV.UK One Login account, you can create one.
+      - id: 93a4b5c6-d7e8-4f90-a123-456789abcdef
+        text: Sign in with Government Gateway
+        value: government-gateway
+        hint:
+          text: Use your Government Gateway user ID, which can be up to 12 characters. You may have a Government Gateway user ID if you have used other GOV.UK services.

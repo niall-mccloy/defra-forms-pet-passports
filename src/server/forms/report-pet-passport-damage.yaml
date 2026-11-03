@@ -1,0 +1,144 @@
+engine: V2
+schema: 2
+name: Report a damaged, destroyed, lost or incorrectly completed pet passport
+startPage: /start
+options:
+  showReferenceNumber: true
+sections: []
+pages:
+  - id: 4a775c6c-b79a-4f83-a8ae-5b7f18c5f783
+    title: Report a damaged, destroyed, lost or incorrectly completed pet passport
+    path: /start
+    controller: StartPageController
+    components:
+      - name: introduction
+        title: Introduction
+        type: Html
+        content: |
+          <p class="govuk-body">You must report any pet passport that is damaged, destroyed, lost or incorrectly completed.</p>
+          <p class="govuk-body">This helps keep passport records accurate and prevents invalid passports from being used.</p>
+          <h2 class="govuk-heading-m">Before you start</h2>
+          <p class="govuk-body">We will need the following information:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>the passport ID you want to report</li>
+            <li>the microchip number of the pet, if the passport was issued to an animal</li>
+          </ul>
+
+  - id: e401c227-1d37-4518-8ef3-036e7a63c689
+    title: What would you like to report?
+    path: /report-reason
+    components:
+      - id: 09c63e53-c6dc-4a13-bfb5-60bb08097896
+        name: reportReason
+        title: What would you like to report?
+        type: RadiosField
+        list: ca46dbe3-d7fa-4f1d-869b-2f5551b5e27a
+        options:
+          required: true
+
+  - id: a624ce1f-9203-43b7-aea3-58e07a8ac84d
+    title: Was the passport registered to a pet?
+    path: /passport-registered
+    components:
+      - id: b069e7b2-4edb-48ab-9545-1291a97414b8
+        name: passportRegistered
+        title: Was the passport registered to a pet?
+        type: RadiosField
+        list: 0ccd8588-1367-48eb-bd37-4a9793e3df8c
+        options:
+          required: true
+
+  - id: 40deeaaf-01f4-474b-b842-b0045f74294a
+    title: What is the pet passport number?
+    path: /passport-id
+    condition: b276ecb6-e22d-4edb-8ed3-c2684a533eac
+    components:
+      - name: passportId
+        title: What is the pet passport number?
+        hint: For example, PPB-100926-001.
+        type: TextField
+        schema:
+          max: 50
+        options:
+          required: true
+
+  - id: c555d248-0b22-4dfe-aaaf-89151b6fca9f
+    title: What is the microchip number?
+    path: /microchip-number
+    condition: 3b8e78ad-3c3f-43d7-b6ea-4388c67aceb1
+    components:
+      - name: microchipNumber
+        title: What is the microchip number?
+        hint: Enter the animal's microchip number.
+        type: TextField
+        schema:
+          max: 30
+        options:
+          required: true
+
+  - id: 58abf559-7aab-4ee6-a8c3-bc045914fa02
+    title: Provide any additional information (optional)
+    path: /additional-information
+    components:
+      - name: additionalInformation
+        title: Provide any additional information
+        hint: Include any details that may help us identify the passport record.
+        type: MultilineTextField
+        schema:
+          max: 1000
+        options:
+          required: false
+          optionalText: true
+
+  - id: 613faeb6-6770-4db4-8166-56c004feb55d
+    title: Check your answers before submitting
+    path: /summary
+    controller: SummaryPageController
+
+lists:
+  - id: ca46dbe3-d7fa-4f1d-869b-2f5551b5e27a
+    name: reportReasonList
+    title: Report reason
+    type: string
+    items:
+      - id: b2bca9de-0381-4a44-8fd0-326c167cb4b0
+        text: Damaged pet passport
+        value: damaged
+      - id: 69ab88af-10a6-4bf1-9b3d-d64f3e975266
+        text: Destroyed pet passport
+        value: destroyed
+      - id: 442c7c59-f422-4f38-85a8-68b6527856e5
+        text: Lost pet passport
+        value: lost
+      - id: 9907ed9e-331e-4d75-a62c-19232915aa86
+        text: Incorrectly completed pet passport
+        value: incorrectly-completed
+  - id: 0ccd8588-1367-48eb-bd37-4a9793e3df8c
+    name: passportRegisteredList
+    title: Passport registered to a pet
+    type: string
+    items:
+      - id: 9a4f9e72-8bfd-41f5-86a0-6b70e8a579a9
+        text: Yes
+        value: 'yes'
+      - id: 29c38a08-fcf7-4e21-8ba5-02a6fdfbe09f
+        text: No
+        value: 'no'
+
+conditions:
+  - id: b276ecb6-e22d-4edb-8ed3-c2684a533eac
+    displayName: passportIsNotRegisteredToPet
+    items:
+      - id: 848cb092-a09c-4dfd-823a-d377f2e4ef7f
+        componentId: b069e7b2-4edb-48ab-9545-1291a97414b8
+        operator: is
+        type: StringValue
+        value: 'no'
+  - id: 3b8e78ad-3c3f-43d7-b6ea-4388c67aceb1
+    displayName: passportIsRegisteredToPet
+    items:
+      - id: a892f74c-cd05-4f27-85dd-b2985189cc12
+        componentId: b069e7b2-4edb-48ab-9545-1291a97414b8
+        operator: is
+        type: StringValue
+        value: 'yes'

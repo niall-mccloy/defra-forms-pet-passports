@@ -1,0 +1,97 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  {{ appHeading({
+    text: heading
+  }) }}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body">
+        This is a demonstration of the <strong>forms-engine-plugin</strong>, a Hapi.js plugin for
+        rendering and processing GOV.UK-style forms.
+      </p>
+
+      <h2 class="govuk-heading-m">Simple form</h2>
+      <p class="govuk-body">
+        A minimal form with a single text input, demonstrating the basic setup required to get a form rendering end-to-end.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/simple-form/start">Launch form</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/simple-form.json">View source JSON</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Register a unicorn</h2>
+      <p class="govuk-body">
+        A more complex, multi-page form with conditional routing, multiple field types, and a summary page.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/register-a-unicorn/where-do-you-live">Launch form</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/register-a-unicorn.json">View source JSON</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Community event permit</h2>
+      <p class="govuk-body">
+        A permit application for holding a community event in a public space, including conditional alcohol details.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/community-event-permit/start">Launch form</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/community-event-permit.yaml">View source YAML</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Report fly-tipping</h2>
+      <p class="govuk-body">
+        A service for reporting illegally dumped waste, including location details, waste type branching, and a summary page.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/report-fly-tipping/start">Launch form</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/report-fly-tipping.yaml">View source YAML</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Junior fishing licence</h2>
+      <p class="govuk-body">
+        A junior licence application for young anglers, including age-based branching and conditional email delivery preferences.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/junior-fishing-license/start">Launch form</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/junior-fishing-license.yaml">View source YAML</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">EU pet passports</h2>
+      <p class="govuk-body">
+        Guidance for pet owners and veterinary practices about EU pet passports.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/pet-passports/start">View guidance</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/pet-passports.yaml">View source YAML</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Pet passport forecasting</h2>
+      <p class="govuk-body">
+        A short survey for veterinary practices to forecast demand for pet passports.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/pet-passports-forecasting/start">Enter a forecast</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/pet-passports-forecasting.yaml">View source YAML</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Order pet passports</h2>
+      <p class="govuk-body">
+        Order EU pet passports for a veterinary practice.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/order-pet-passports/start">Start an order</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/order-pet-passports.yaml">View source YAML</a></li>
+      </ul>
+
+      <h2 class="govuk-heading-m">Report a problem with a pet passport</h2>
+      <p class="govuk-body">
+        Report a damaged, destroyed, lost or incorrectly completed pet passport.
+      </p>
+      <ul class="govuk-list">
+        <li><a class="govuk-link" href="/report-pet-passport-damage/start">Start a report</a></li>
+        <li><a class="govuk-link" href="https://github.com/defra/forms-engine-plugin-example-ui/blob/main/src/server/forms/report-pet-passport-damage.yaml">View source YAML</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

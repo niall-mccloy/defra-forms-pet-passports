@@ -1,0 +1,46 @@
+import { createServer } from '~/src/server/index.js'
+import { statusCodes } from '~/src/server/common/constants/status-codes.js'
+
+describe('#homeController', () => {
+  /** @type {Server} */
+  let server
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop({ timeout: 0 })
+  })
+
+  test('Should provide expected response', async () => {
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/'
+    })
+
+    expect(result).toEqual(
+      expect.stringContaining('Forms engine plugin demo |')
+    )
+    expect(statusCode).toBe(statusCodes.ok)
+  })
+
+  test('Should render the pet passport damage report start page', async () => {
+    const { result, statusCode } = await server.inject({
+      method: 'GET',
+      url: '/report-pet-passport-damage/start'
+    })
+
+    expect(result).toEqual(
+      expect.stringContaining(
+        'Report a damaged, destroyed, lost or incorrectly completed pet passport'
+      )
+    )
+    expect(statusCode).toBe(statusCodes.ok)
+  })
+})
+
+/**
+ * @import { Server } from '@hapi/hapi'
+ */

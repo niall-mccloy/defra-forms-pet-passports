@@ -1,0 +1,221 @@
+{
+  "engine": "V2",
+  "schema": 2,
+  "name": "Livestock Movement Notification form",
+  "sections": [
+    {
+      "name": "animals",
+      "title": "Animals",
+      "hideTitle": false,
+      "id": "97858225-2FE3-44B2-8CD5-1771283A5C92"
+    },
+    {
+      "name": "movement",
+      "title":"Movement",
+      "hideTitle": false,
+      "id": "1A23AF00-9E22-403F-BE31-363FA0195B2F"
+    },
+    {
+      "name": "date",
+      "title": "Date",
+      "hideTitle": false,
+      "id": "5F307FB0-4C31-4C92-A8EB-5FC572F9D049"
+    }
+  ],
+  "options": {
+    "showReferenceNumber": true
+  },
+  "pages": [
+    {
+      "title": "Notify a livestock movement",
+      "path": "/start",
+      "controller": "StartPageController",
+      "components": [
+        {
+          "name": "introText",
+          "title": "introduction",
+          "type": "Html",
+          "content": "<p class=\"govuk-body\">Use this service to notify a livestock movement.</p>"
+        }
+      ]
+    },
+    {
+      "title": "Animal Type",
+      "path": "/animal-type",
+      "section": "97858225-2FE3-44B2-8CD5-1771283A5C92",
+      "components": [
+        {
+          "id": "04C122BA-7359-4386-B67E-FD32CF404349",
+          "name": "animalType",
+          "title": "Animal type",
+          "type": "RadiosField",
+          "list": "0D985DE5-935E-4D6D-A074-84703764CFD9"
+        }
+      ]
+    },
+    {
+        "path": "/other-animal",
+        "title": "Other animal",
+        "condition": "BD10CCA7-FE77-49F3-8909-9188C0191BE5",
+        "section":"97858225-2FE3-44B2-8CD5-1771283A5C92",
+        "components": [
+            {
+                "name": "otherAnimal",
+                "title": "Describe the animal type",
+                "type": "TextField",
+                "hint": "Include as much detail as you can"
+            }
+        ]
+    },
+    {
+        "path": "/number-of-animals",
+        "title": "Number of Animals",
+        "section":"97858225-2FE3-44B2-8CD5-1771283A5C92",
+        "components": [
+            {
+                "name": "numberOfAnimals",
+                "title": "How many animals are being moved?",
+                "type": "NumberField",
+                "options": {
+                    "instructionText": "Enter your business name"
+                },
+                "schema": {
+                    "min": 1,
+                    "max": 1000
+                }
+            }
+        ]
+    },
+    {
+        "path": "/movement-type",
+        "title": "Movement Type",
+        "section": "1A23AF00-9E22-403F-BE31-363FA0195B2F",
+        "components": [
+            {
+                "id": "BE07CDB7-8146-4FD0-86AF-153CC32CB719",
+                "name": "movementType",
+                "title": "What type of movement is this?",
+                "type": "RadiosField",
+                "list": "A0BA406C-4061-470E-A676-06EECA96AF51"
+            }
+        ]
+    },
+    {
+        "path": "/destination-holding",
+        "title": "Destination Holding",
+        "section": "1A23AF00-9E22-403F-BE31-363FA0195B2F",
+        "condition": "C1D7F4F3-101C-4CE5-896B-2369BBBBEE47",
+        "components": [
+            {
+                "name": "destinationHoldingNumber",
+                "title": "Enter a destination holding number",
+                "type": "TextField",
+                "schema": {
+                    "length": 9
+                }
+            }
+        ]
+    },
+    {
+        "path": "/movement-date",
+        "title": "Movement Date",
+        "section":"5F307FB0-4C31-4C92-A8EB-5FC572F9D049",
+        "components": [
+            {
+                "name": "movementDate",
+                "title": "When will the movement take place?",
+                "type": "DatePartsField",
+                "options": {
+                    "maxDaysInPast": 0
+                }
+            }
+        ]
+    },
+    {
+      "path": "/summary",
+      "title": "Check your answers",
+      "controller": "SummaryPageController"
+    }
+  ],
+  "lists": [
+      {
+        "id": "0D985DE5-935E-4D6D-A074-84703764CFD9",
+        "name": "animalTypeList",
+        "title": "Animal type list",
+        "type": "string",
+        "items": [
+            {
+                "id": "99631287-9202-4CB5-9753-511828A4DFB8",
+                "text": "Cattle",
+                "value": "cattle"
+            },
+            {
+                "id": "82DE3672-B9BF-44F8-B2AB-5A86EB79E4E9",
+                "text": "Sheep",
+                "value": "sheep"
+            },
+            {
+                "id": "AD2BDAD3-550C-43B8-B193-538D2A2F4694",
+                "text": "Goats",
+                "value": "goats"
+            },
+            {
+                "id": "22A16FDC-749B-4BE4-92F4-8999C5F5E206",
+                "text": "Other",
+                "value": "other"
+            }
+        ]
+      },
+      {
+        "id": "A0BA406C-4061-470E-A676-06EECA96AF51",
+        "name": "movementTypeList",
+        "title": "Movement type list",
+        "type": "string",
+        "items": [
+            {
+                "id": "82887C85-0A46-473A-B7AC-F3A895FCB66C",
+                "text": "To market",
+                "value": "to market"
+            },
+            {
+                "id": "040AC17E-E7B5-4707-BA07-13D67FEA6C9E",
+                "text": "To slaughterhouse",
+                "value": "to slaughterhouse"
+            },
+            {
+                "id": "6FD4F255-6772-4CF2-A382-1EBBDFB6CFF6",
+                "text": "Between holdings",
+                "value": "between holdings"
+            }
+        ]
+      }
+    ],
+  "conditions": [
+    {
+        "id": "BD10CCA7-FE77-49F3-8909-9188C0191BE5",
+        "displayName": "animalTypeIsOther",
+        "items": [
+            {
+                "id": "664A7FA5-3161-49E7-8482-B7B061B70998",
+                "componentId": "04C122BA-7359-4386-B67E-FD32CF404349",
+                "operator": "is",
+                "type": "StringValue",
+                "value": "other"
+            }
+        ]
+    },
+    {
+        "id": "C1D7F4F3-101C-4CE5-896B-2369BBBBEE47",
+        "displayName": "movementTypeIsBetweenHoldings",
+        "items": [
+            {
+            "id": "C18E1E0D-DD9F-4BFC-81CB-A79369397FFE",
+            "componentId": "BE07CDB7-8146-4FD0-86AF-153CC32CB719",
+            "operator": "is",
+            "type": "StringValue",
+            "value": "between holdings"
+          }
+        ]
+    }
+  ]
+}

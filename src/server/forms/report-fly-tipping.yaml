@@ -1,0 +1,147 @@
+engine: V2
+schema: 2
+name: Report fly-tipping
+sections:
+  - name: location
+    title: Location
+    hideTitle: false
+    id: 2E4A7A74-591D-43E6-A0A3-38B1C2B6A7C5
+  - name: waste
+    title: Waste
+    hideTitle: false
+    id: 9A7EA727-203D-4E6A-BE9C-AE1A1EF7C42C
+  - name: reporter
+    title: Reporter
+    hideTitle: false
+    id: C1A7A6E6-D9A8-4D77-AE82-056A443B5F5F
+options:
+  showReferenceNumber: true
+pages:
+  - title: Report fly-tipping
+    path: /start
+    controller: StartPageController
+    components:
+      - name: introText
+        title: introduction
+        type: Html
+        content: <p class="govuk-body">Use this service to report fly-tipping in your area.</p>
+
+  - title: Location details
+    path: /location-details
+    section: 2E4A7A74-591D-43E6-A0A3-38B1C2B6A7C5
+    components:
+      - name: postcode
+        title: Postcode
+        type: TextField
+        options:
+          instructionText: Enter the postcode where the waste is located
+      - name: wasteLocationDescription
+        title: Describe where the waste is located
+        type: MultilineTextField
+        schema:
+          max: 250
+
+  - title: Waste type
+    path: /waste-type
+    section: 9A7EA727-203D-4E6A-BE9C-AE1A1EF7C42C
+    components:
+      - id: 8A7F4A72-9E5A-4DAE-9E4A-1DE7F33C7D68
+        name: wasteType
+        title: What type of waste are you reporting?
+        type: RadiosField
+        list: 6D3CF16D-2CCD-4D98-BDF4-6D496A3F8E8A
+
+  - title: Describe the waste
+    path: /waste-description
+    condition: B91F298A-A4FF-4A94-B5CC-4F4149B477E4
+    section: 9A7EA727-203D-4E6A-BE9C-AE1A1EF7C42C
+    components:
+      - name: wasteDescription
+        title: Describe the waste
+        type: MultilineTextField
+        schema:
+          max: 500
+
+  - title: Reporter details
+    path: /reporter-details
+    section: C1A7A6E6-D9A8-4D77-AE82-056A443B5F5F
+    components:
+      - name: fullName
+        title: Full name
+        type: TextField
+        options:
+          required: false
+          optionalText: true
+          instructionText: Enter your full name
+      - name: emailAddress
+        title: Email address
+        type: EmailAddressField
+        options:
+          required: false
+          optionalText: true
+          instructionText: Enter your email address
+      - name: telephoneNumber
+        title: Telephone number
+        type: TelephoneNumberField
+        options:
+          required: false
+          optionalText: true
+          instructionText: Enter your telephone number
+
+  - title: Supporting evidence
+    path: /supporting-evidence
+    section: C1A7A6E6-D9A8-4D77-AE82-056A443B5F5F
+    components:
+      - id: C5C08B3D-AF93-46F7-BE1A-E1B4F65886D9
+        name: photographsAvailable
+        title: Do you have photographs of the fly-tipping?
+        type: RadiosField
+        list: 8EF79A0E-CF0B-445E-AE6D-585E110E84D5
+
+  - path: /summary
+    title: Check your answers
+    controller: SummaryPageController
+
+lists:
+  - id: 6D3CF16D-2CCD-4D98-BDF4-6D496A3F8E8A
+    name: wasteTypeList
+    title: Waste type list
+    type: string
+    items:
+      - id: D343F0B1-3EAD-48B7-8C96-7A7A0CFD2E7D
+        text: Household waste
+        value: household-waste
+      - id: 8CC7B962-D8A4-43F7-8EC9-0A37BA2F5D9E
+        text: Furniture
+        value: furniture
+      - id: BCFBEAB3-0E6F-4975-B6D3-17E7CCE9E64C
+        text: Building materials
+        value: building-materials
+      - id: 5149C980-AB7B-49EC-B4D9-C7E1CF5B2E33
+        text: Electrical items
+        value: electrical-items
+      - id: 2B8F8D5E-9A41-4A09-9A2C-58A376B0A41B
+        text: Other
+        value: other
+
+  - id: 8EF79A0E-CF0B-445E-AE6D-585E110E84D5
+    name: photographsAvailableList
+    title: Supporting evidence list
+    type: string
+    items:
+      - id: A93F83F5-9807-4DDA-9D1D-AE1CDE5AD7BD
+        text: Yes
+        value: yes
+      - id: 89B9A588-99E5-496A-9B2F-FFECF6A8D5A4
+        text: No
+        value: no
+
+conditions:
+  - id: B91F298A-A4FF-4A94-B5CC-4F4149B477E4
+    displayName: wasteTypeIsOther
+    items:
+      - id: 1B5D2D0B-BD82-4B93-A755-5E69A9E9E8E1
+        componentId: 8A7F4A72-9E5A-4DAE-9E4A-1DE7F33C7D68
+        operator: is
+        type: StringValue
+        value: other

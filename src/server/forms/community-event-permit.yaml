@@ -1,0 +1,117 @@
+engine: V2
+schema: 2
+name: Community Event Permit form
+sections:
+  - name: applicant
+    title: Applicant
+    hideTitle: false
+    id: 6F7A9A8F-0360-4F0F-A020-1AF2ECA6F7E1
+  - name: event
+    title: Event
+    hideTitle: false
+    id: 70C3A379-9F2B-4A9C-9E9F-76E4A432E763
+  - name: alcohol
+    title: Alcohol
+    hideTitle: false
+    id: C9D2A7A8-0F7E-46D5-8A4A-9226747D3FB6
+options:
+  showReferenceNumber: true
+pages:
+  - title: Apply for a permit to hold a community event in a public space
+    path: /start
+    controller: StartPageController
+    components:
+      - name: introText
+        title: introduction
+        type: Html
+        content: <p class="govuk-body">Apply for a permit to hold a community event in a public space.</p>
+
+  - title: Applicant details
+    path: /applicant-details
+    section: 6F7A9A8F-0360-4F0F-A020-1AF2ECA6F7E1
+    components:
+      - name: fullName
+        title: Full name
+        type: TextField
+        options:
+          instructionText: Enter your full name
+        schema:
+          max: 100
+      - name: emailAddress
+        title: Email address
+        type: EmailAddressField
+        options:
+          instructionText: Enter your email address
+
+  - title: Event information
+    path: /event-information
+    section: 70C3A379-9F2B-4A9C-9E9F-76E4A432E763
+    components:
+      - name: eventName
+        title: Event name
+        type: TextField
+        schema:
+          max: 150
+      - name: expectedAttendance
+        title: Expected attendance
+        type: NumberField
+        schema:
+          min: 1
+
+  - title: Alcohol sales
+    path: /alcohol-sales
+    section: C9D2A7A8-0F7E-46D5-8A4A-9226747D3FB6
+    components:
+      - id: 3C3A5B92-6A73-4F00-A7DB-9A188EDB8FD1
+        name: alcoholSales
+        title: Will alcohol be sold at the event?
+        type: RadiosField
+        list: 1B34D02A-B2A8-40BE-8E5C-0A0C8257F956
+
+  - title: Alcohol details
+    path: /alcohol-details
+    section: C9D2A7A8-0F7E-46D5-8A4A-9226747D3FB6
+    condition: 7E6D74D8-F8DB-4D42-9B39-EA9E0A77B20D
+    components:
+      - name: alcoholDetails
+        title: Describe the alcohol sales arrangements.
+        type: MultilineTextField
+        schema:
+          max: 500
+
+  - title: Event date
+    path: /event-date
+    section: 70C3A379-9F2B-4A9C-9E9F-76E4A432E763
+    components:
+      - name: eventDate
+        title: Event date
+        type: DatePartsField
+        options:
+          maxDaysInPast: 0
+
+  - path: /summary
+    title: Check your answers
+    controller: SummaryPageController
+
+lists:
+  - id: 1B34D02A-B2A8-40BE-8E5C-0A0C8257F956
+    name: alcoholSalesList
+    title: Alcohol sales list
+    type: string
+    items:
+      - id: 526E79C8-213A-4A7F-8CBE-7CC5CE43F6FC
+        text: Yes
+        value: yes
+      - id: D9D8E00E-1ECC-4D0D-AB02-3C599B28469D
+        text: No
+        value: no
+
+conditions:
+  - id: 7E6D74D8-F8DB-4D42-9B39-EA9E0A77B20D
+    displayName: alcoholSalesIsYes
+    items:
+      - id: 7203BCE1-DC9D-4C3D-AF0C-5CD7D9AB613D
+        componentId: 3C3A5B92-6A73-4F00-A7DB-9A188EDB8FD1
+        operator: is
+        type: StringValue
+        value: yes

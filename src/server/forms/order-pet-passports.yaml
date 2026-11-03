@@ -1,0 +1,153 @@
+engine: V2
+schema: 2
+name: Order pet passports
+startPage: /start
+options:
+  showReferenceNumber: true
+sections:
+  - name: order
+    title: Order details
+    hideTitle: true
+    id: 5f6a7b8c-9d0e-4f12-a345-6789abcdef01
+  - name: delivery
+    title: Delivery address
+    hideTitle: true
+    id: 6a7b8c9d-0e1f-4a23-b456-789abcdef012
+  - name: contact
+    title: Contact details
+    hideTitle: true
+    id: 7b8c9d0e-1f2a-4b34-c567-89abcdef0123
+pages:
+  - id: 8c9d0e1f-2a3b-4c45-d678-9abcdef01234
+    title: Order pet passports for a veterinary practice
+    path: /start
+    controller: StartPageController
+    components:
+      - name: introduction
+        title: Introduction
+        type: Html
+        content: |
+          <p class="govuk-body">EU pet passports can be ordered by veterinary practices in England, Scotland and Wales in multiples of 20. Only <a class="govuk-link" href="https://www.gov.uk/government/collections/official-veterinarians-ovs-and-ov-practices-forms-and-guidance">Official Veterinarians (OVs)</a> can issue pet passports to pet owners.</p>
+          <div class="govuk-inset-text">Each passport will have a unique ID number. It's important to record these in case you need to report a problem, for example a lost or damaged passport.</div>
+          <h2 class="govuk-heading-m">Who can order pet passports</h2>
+          <p class="govuk-body">Pet passports can be ordered by the following if they work at a registered veterinary practice:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>administrative staff</li>
+            <li>Official Veterinarians (OVs)</li>
+          </ul>
+          <h2 class="govuk-heading-m">Cost</h2>
+          <p class="govuk-body">Each box of 20 passports costs £56.</p>
+          <h2 class="govuk-heading-m">Before you start</h2>
+          <p class="govuk-body">You will need the following information:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>veterinary practice details</li>
+            <li>quantity (boxes of 20)</li>
+            <li>contact name, telephone number and email address</li>
+          </ul>
+
+  - id: 9d0e1f2a-3b4c-4d56-e789-abcdef012345
+    title: How many pet passports do you need?
+    path: /select-quantity
+    section: 5f6a7b8c-9d0e-4f12-a345-6789abcdef01
+    components:
+      - id: 0e1f2a3b-4c5d-4e67-f890-abcdef012345
+        name: passportQuantity
+        title: How many pet passports do you need?
+        type: RadiosField
+        list: 1f2a3b4c-5d6e-4f78-a901-bcdef0123456
+        options:
+          required: true
+
+  - id: 2a3b4c5d-6e7f-4012-a345-6789abcdef01
+    title: Confirm delivery address
+    path: /delivery-address
+    section: 6a7b8c9d-0e1f-4a23-b456-789abcdef012
+    components:
+      - id: 3b4c5d6e-7f80-4123-b456-789abcdef012
+        name: deliveryAddress
+        title: Confirm delivery address
+        hint: Select the address where you want the passports delivered. These addresses are of practices attached to your Defra OV login account.
+        type: RadiosField
+        list: 4c5d6e7f-8091-4234-c567-89abcdef0123
+        options:
+          required: true
+
+  - id: 5d6e7f80-91a2-4345-d678-9abcdef01234
+    title: Contact details
+    path: /contact-details
+    section: 7b8c9d0e-1f2a-4b34-c567-89abcdef0123
+    components:
+      - name: contactDetailsHint
+        title: Contact details hint
+        type: Html
+        content: <p class="govuk-body">Enter contact information to track your order.</p>
+      - name: contactName
+        title: Full name
+        type: TextField
+        schema:
+          max: 70
+        options:
+          required: true
+      - name: contactPhone
+        title: Phone number
+        type: TelephoneNumberField
+        options:
+          required: true
+      - name: contactEmail
+        title: Email address
+        hint: We'll send confirmation of your order to this email address
+        type: EmailAddressField
+        options:
+          required: true
+
+  - id: 6e7f8091-a2b3-4456-e789-abcdef012345
+    title: Check your order before payment
+    path: /summary
+    controller: SummaryPageController
+    components:
+      - name: paymentSummary
+        title: Payment summary
+        type: Html
+        content: |
+          <h2 class="govuk-heading-m">Payment summary</h2>
+          <p class="govuk-body">Pet passports</p>
+          <p class="govuk-body">The total amount for your selected quantity is shown in your order details above. Each box of 20 passports costs £56.</p>
+          <p class="govuk-body">Payment processing is not available in this service.</p>
+
+lists:
+  - id: 1f2a3b4c-5d6e-4f78-a901-bcdef0123456
+    name: passportQuantityList
+    title: Passport quantity
+    type: string
+    items:
+      - id: 2a3b4c5d-6e7f-4012-a345-6789abcdef02
+        text: 1 box of 20 passports (£56 total)
+        value: '1'
+      - id: 3b4c5d6e-7f80-4123-b456-789abcdef013
+        text: 2 boxes of 20 passports (40 passports total, £112 total)
+        value: '2'
+      - id: 4c5d6e7f-8091-4234-c567-89abcdef0124
+        text: 3 boxes of 20 passports (60 passports total, £168 total)
+        value: '3'
+      - id: 5d6e7f80-91a2-4345-d678-9abcdef01235
+        text: 4 boxes of 20 passports (80 passports total, £224 total)
+        value: '4'
+      - id: 6e7f8091-a2b3-4456-e789-abcdef012346
+        text: 5 boxes of 20 passports (100 passports total, £280 total)
+        value: '5'
+  - id: 4c5d6e7f-8091-4234-c567-89abcdef0123
+    name: deliveryAddressList
+    title: Veterinary practice delivery addresses
+    type: string
+    items:
+      - id: 7f8091a2-b3c4-4567-f890-abcdef012347
+        text: Vet Franchise 1, 14 Willowbrook Crescent, Harton, Newcastle, NE9 7ZX
+        value: vet-franchise-1
+      - id: 8091a2b3-c4d5-4678-a901-bcdef0123458
+        text: Vet Franchise 2, Unit 3, 88 Kingsway Gardens, Redbridge, London, E12 6QP
+        value: vet-franchise-2
+      - id: 91a2b3c4-d5e6-4789-b012-cdef01234569
+        text: Vet Franchise 3, 27 Meadow Lane, Westbrook, Manchester, M21 4RD
+        value: vet-franchise-3
+
+conditions: []

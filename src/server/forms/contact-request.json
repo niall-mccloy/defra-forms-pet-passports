@@ -1,0 +1,115 @@
+{
+  "engine": "V2",
+  "schema": 2,
+  "name": "Contact Request form",
+  "options": {
+    "showReferenceNumber": true
+  },
+  "pages": [
+    {
+      "title": "Request support",
+      "path": "/start",
+      "controller": "StartPageController",
+      "components": [
+        {
+          "name": "introText",
+          "title": "introduction",
+          "type": "Html",
+          "content": "<p class=\"govuk-body\">Use this service to request support from our team.</p>"
+        }
+      ]
+    },
+    {
+      "path": "/person-details",
+      "title": "What is your full name",
+      "components": [
+        {
+          "name": "fullName",
+          "title": "Full name",
+          "type": "TextField",
+          "options": {
+            "instructionText": "Enter your full name"
+          },
+          "schema": {
+            "max": 150
+          }
+        },
+        {
+            "name": "emailAddress",
+            "title": "Email address",
+            "type": "EmailAddressField",
+            "options": {
+                "instructionText": "Enter your email address"
+            }
+        }
+      ]
+    },
+    {
+        "path": "/contact-preferences",
+        "title": "How would you like us to contact you?",
+        "components": [
+            {
+                "id": "DDDF83D1-3B04-4806-AD47-ADABF811F9A8",
+                "name": "contactPreference",
+                "title": "Contact preference",
+                "type": "RadiosField",
+                "list": "2A7F40B9-7722-4DB7-B791-EC4ABC952EC6"
+            }
+        ]
+    },
+    {
+        "path": "/phone-number",
+        "title": "What is your phone number?",
+        "condition": "9684BA27-08AF-4FCE-B983-4F655C8390B7",
+        "components": [
+            {
+                "name": "phoneNumber",
+                "title": "Phone number",
+                "type": "TelephoneNumberField",
+                "options": {
+                    "instructionText": "Enter your phone number"
+                }
+            }
+        ]
+    },
+    {
+      "path": "/summary",
+      "title": "Check your answers",
+      "controller": "SummaryPageController"
+    }
+  ],
+  "lists": [
+    {
+        "id": "2A7F40B9-7722-4DB7-B791-EC4ABC952EC6",
+        "name": "contact-preference-list",
+        "title": "Contact Preference List",
+        "type": "string",
+        "items": [
+            {
+                "text": "Email",
+                "value": "email"
+            },
+            {
+                "text": "Phone",
+                "value": "phone"
+            }
+        ]
+      }
+    ],
+  "sections": [],
+  "conditions": [
+    {
+        "id": "9684BA27-08AF-4FCE-B983-4F655C8390B7",
+        "displayName": "contactPreferenceIsPhone",
+        "items": [
+            {
+                "id": "9A5D2F2B-C07B-48F9-8B24-2096CA352A34",
+                "componentId": "DDDF83D1-3B04-4806-AD47-ADABF811F9A8",
+                "operator": "is",
+                "type": "StringValue",
+                "value": "phone"
+            }
+        ]
+    }
+  ]
+}
