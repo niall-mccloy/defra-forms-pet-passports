@@ -3,6 +3,9 @@ import { readFileSync } from 'node:fs'
 
 import { parse as parseYaml } from 'yaml'
 
+import path from 'node:path'
+import { appendFile, mkdir } from 'node:fs/promises'
+
 const petPassportsDefinition = parseYaml(
   readFileSync(new URL('./forms/pet-passports.yaml', import.meta.url), 'utf8')
 )
@@ -23,6 +26,10 @@ const reportPetPassportDamageDefinition = parseYaml(
     new URL('./forms/report-pet-passport-damage.yaml', import.meta.url),
     'utf8'
   )
+)
+
+const submissionFile = path.resolve(
+  process.env.FORM_SUBMISSION_FILE ?? '.local-data/submissions.jsonl'
 )
 
 /**
@@ -171,11 +178,25 @@ const formsService = {
 
 const formSubmissionService = {
   persistFiles: () => Promise.resolve({}),
-  submit: () =>
-    Promise.resolve({
+  submit: async (data) => {
+    await mkdir(path.dirname(submissionFile), { recursive: true, mode: 0o700 })
+
+    const record = {
+      schemaVersion: 1,
+      capturedAt: new Date().toISOString(),
+      payload: data
+    }
+
+    await appendFile(submissionFile, `${JSON.stringify(record)}\n`, {
+      encoding: 'utf8',
+      mode: 0o600
+    })
+
+    return {
       message: 'OK',
       result: { files: { main: '', repeaters: {} } }
-    })
+    }
+  }
 }
 
 const outputService = {
