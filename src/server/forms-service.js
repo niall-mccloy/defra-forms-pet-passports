@@ -3,8 +3,7 @@ import { readFileSync } from 'node:fs'
 
 import { parse as parseYaml } from 'yaml'
 
-import path from 'node:path'
-import { appendFile, mkdir } from 'node:fs/promises'
+import { saveSubmission } from './submission-store.js'
 
 const petPassportsDefinition = parseYaml(
   readFileSync(new URL('./forms/pet-passports.yaml', import.meta.url), 'utf8')
@@ -26,10 +25,6 @@ const reportPetPassportDamageDefinition = parseYaml(
     new URL('./forms/report-pet-passport-damage.yaml', import.meta.url),
     'utf8'
   )
-)
-
-const submissionFile = path.resolve(
-  process.env.FORM_SUBMISSION_FILE ?? '.local-data/submissions.jsonl'
 )
 
 /**
@@ -178,29 +173,44 @@ const formsService = {
 
 const formSubmissionService = {
   persistFiles: () => Promise.resolve({}),
-  submit: async (data) => {
-    await mkdir(path.dirname(submissionFile), { recursive: true, mode: 0o700 })
+  submit: () => ({
+    message: 'OK',
+    result: { files: { main: '', repeaters: {} } }
+  })
+}
 
-    const record = {
-      schemaVersion: 1,
-      capturedAt: new Date().toISOString(),
-      payload: data
-    }
-
-    await appendFile(submissionFile, `${JSON.stringify(record)}\n`, {
-      encoding: 'utf8',
-      mode: 0o600
-    })
-
-    return {
-      message: 'OK',
-      result: { files: { main: '', repeaters: {} } }
-    }
+function toAnswer(item) {
+  return {
+    name: item.name,
+    title: item.title,
+    value: item.value,
+    ...(item.subItems
+      ? { subItems: item.subItems.map((row) => row.map(toAnswer)) }
+      : {})
   }
 }
 
 const outputService = {
-  submit: () => Promise.resolve()
+  submit: async (
+    _context,
+    _request,
+    _model,
+    _emailAddress,
+    items,
+    _submitResponse,
+    formMetadata
+  ) => {
+    await saveSubmission({
+      schemaVersion: 1,
+      submittedAt: new Date().toISOString(),
+      form: {
+        id: formMetadata?.id,
+        slug: formMetadata?.slug,
+        title: formMetadata?.title
+      },
+      answers: items.map(toAnswer)
+    })
+  }
 }
 
 export default { formsService, formSubmissionService, outputService }
