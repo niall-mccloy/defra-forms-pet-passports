@@ -37,6 +37,7 @@ Start now
 Which veterinary practice is this for?
 
 Options:
+
 - Vet Franchise 1, 14 Willowbrook Crescent, Harton, Newcastle, NE9 7ZX
 - Vet Franchise 2, Unit 3, 88 Kingsway Gardens, Redbridge, London, E12 6QP
 - Vet Franchise 3, 27 Meadow Lane, Westbrook, Manchester, M21 4RD
@@ -51,8 +52,9 @@ Continue
 
 How many pets did you issue animal health certificates for in the last year?
 
-Number 
+Number
 Validation:
+
 - Required
 
 ### Button

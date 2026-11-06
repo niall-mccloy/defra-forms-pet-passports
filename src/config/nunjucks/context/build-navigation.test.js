@@ -14,53 +14,6 @@ describe('#buildNavigation', () => {
     ).toEqual([
       {
         active: false,
-        text: 'Simple form',
-        href: '/simple-form/start'
-      },
-      {
-        active: false,
-        text: 'Register a unicorn form',
-        href: '/register-a-unicorn/where-do-you-live'
-      },
-      {
-        active: false,
-        text: 'EU pet passports',
-        href: '/pet-passports/start'
-      },
-      {
-        active: false,
-        text: 'Pet passport forecasting',
-        href: '/pet-passports-forecasting/start'
-      },
-      {
-        active: false,
-        text: 'Order pet passports',
-        href: '/order-pet-passports/start'
-      },
-      {
-        active: false,
-        text: 'Report pet passport damage',
-        href: '/report-pet-passport-damage/start'
-      }
-    ])
-  })
-
-  test('Should provide expected highlighted navigation details', () => {
-    expect(
-      buildNavigation(mockRequest({ path: '/simple-form/start' }))
-    ).toEqual([
-      {
-        active: true,
-        text: 'Simple form',
-        href: '/simple-form/start'
-      },
-      {
-        active: false,
-        text: 'Register a unicorn form',
-        href: '/register-a-unicorn/where-do-you-live'
-      },
-      {
-        active: false,
         text: 'EU pet passports',
         href: '/pet-passports/start'
       },
@@ -87,7 +40,7 @@ describe('#buildNavigation', () => {
       mockRequest({ path: '/pet-passports/start' })
     )
 
-    expect(navigation[2].active).toBe(true)
+    expect(navigation[0].active).toBe(true)
   })
 
   test('Should highlight the pet passport forecasting navigation item', () => {
@@ -95,8 +48,8 @@ describe('#buildNavigation', () => {
       mockRequest({ path: '/pet-passports-forecasting/start' })
     )
 
-    expect(navigation[2].active).toBe(false)
-    expect(navigation[3].active).toBe(true)
+    expect(navigation[0].active).toBe(false)
+    expect(navigation[1].active).toBe(true)
   })
 
   test('Should highlight the pet passport ordering navigation item', () => {
@@ -104,7 +57,7 @@ describe('#buildNavigation', () => {
       mockRequest({ path: '/order-pet-passports/start' })
     )
 
-    expect(navigation[4].active).toBe(true)
+    expect(navigation[2].active).toBe(true)
   })
 
   test('Should highlight the pet passport damage reporting navigation item', () => {
@@ -112,7 +65,7 @@ describe('#buildNavigation', () => {
       mockRequest({ path: '/report-pet-passport-damage/start' })
     )
 
-    expect(navigation[5].active).toBe(true)
+    expect(navigation[3].active).toBe(true)
   })
 })
 

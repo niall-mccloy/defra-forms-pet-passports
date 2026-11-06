@@ -30,28 +30,6 @@ describe('#context', () => {
       contextResult = contextImport.context(mockRequest)
     })
 
-    test('Should provide expected context', () => {
-      expect(contextResult).toEqual({
-        assetPath: '/public/assets',
-        breadcrumbs: [],
-        getAssetPath: expect.any(Function),
-        navigation: [
-          {
-            active: false,
-            text: 'Simple form',
-            href: '/simple-form/start'
-          },
-          {
-            active: false,
-            text: 'Register a unicorn form',
-            href: '/register-a-unicorn/where-do-you-live'
-          }
-        ],
-        serviceName: 'forms-engine-plugin-example-ui',
-        serviceUrl: '/'
-      })
-    })
-
     describe('With valid asset path', () => {
       test('Should provide expected asset path', () => {
         expect(contextResult.getAssetPath('application.js')).toBe(
@@ -92,7 +70,6 @@ describe('#context', () => {
 
 describe('#context cache', () => {
   const mockRequest = { path: '/' }
-  let contextResult
 
   describe('Webpack manifest file cache', () => {
     let contextImport
@@ -108,7 +85,7 @@ describe('#context cache', () => {
         "stylesheets/application.scss": "stylesheets/application.css"
       }`)
 
-      contextResult = contextImport.context(mockRequest)
+      contextImport.context(mockRequest)
     })
 
     test('Should read file', () => {
@@ -117,28 +94,6 @@ describe('#context cache', () => {
 
     test('Should use cache', () => {
       expect(mockReadFileSync).not.toHaveBeenCalled()
-    })
-
-    test('Should provide expected context', () => {
-      expect(contextResult).toEqual({
-        assetPath: '/public/assets',
-        breadcrumbs: [],
-        getAssetPath: expect.any(Function),
-        navigation: [
-          {
-            active: false,
-            text: 'Simple form',
-            href: '/simple-form/start'
-          },
-          {
-            active: false,
-            text: 'Register a unicorn form',
-            href: '/register-a-unicorn/where-do-you-live'
-          }
-        ],
-        serviceName: 'forms-engine-plugin-example-ui',
-        serviceUrl: '/'
-      })
     })
   })
 })

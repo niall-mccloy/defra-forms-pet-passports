@@ -3,8 +3,6 @@ import services from '~/src/server/forms-service.js'
 
 const { formsService } = services
 
-const VALID_ID = '48158770-647d-4fde-a3c5-1fc1e28f780d'
-const VALID_SLUG = 'simple-form'
 const PET_PASSPORTS_ID = '9e8f7d6c-5b4a-4321-9876-5f4e3d2c1b0a'
 const PET_PASSPORTS_FORECASTING_ID = 'a2345678-9abc-4def-8123-456789abcdef'
 const ORDER_PET_PASSPORTS_ID = 'a2b3c4d5-e6f7-4890-a123-456789abcdef'
@@ -13,9 +11,9 @@ const REPORT_PET_PASSPORT_DAMAGE_ID = 'd623ce9a-cf52-44bc-8861-11a7a1c262f6'
 describe('formsService', () => {
   describe('getFormMetadata', () => {
     test('returns metadata for known slug', async () => {
-      const result = await formsService.getFormMetadata(VALID_SLUG)
-      expect(result.id).toBe(VALID_ID)
-      expect(result.slug).toBe(VALID_SLUG)
+      const result = await formsService.getFormMetadata('pet-passports')
+      expect(result.id).toBe(PET_PASSPORTS_ID)
+      expect(result.slug).toBe('pet-passports')
     })
 
     test('returns metadata for the EU pet passports page', async () => {
@@ -33,7 +31,7 @@ describe('formsService', () => {
       expect(result.id).toBe(PET_PASSPORTS_FORECASTING_ID)
       expect(result.title).toBe('Enter a forecast for pet passports')
       expect(result.submissionGuidance).toContain(
-        'Pet passport estimate submitted'
+        'We will use this information to help plan future passport supply.'
       )
     })
 
@@ -42,7 +40,9 @@ describe('formsService', () => {
 
       expect(result.id).toBe(ORDER_PET_PASSPORTS_ID)
       expect(result.title).toBe('Order pet passports')
-      expect(result.submissionGuidance).toContain('Order complete')
+      expect(result.submissionGuidance).toContain(
+        'We have sent your order to APHA.'
+      )
     })
 
     test('returns metadata for reporting pet passport damage', async () => {
@@ -55,7 +55,7 @@ describe('formsService', () => {
         'Report a damaged, destroyed, lost or incorrectly completed pet passport'
       )
       expect(result.submissionGuidance).toContain(
-        'Your report has been received and recorded.'
+        'We will send this information to APHA.'
       )
     })
 
@@ -68,8 +68,8 @@ describe('formsService', () => {
 
   describe('getFormMetadataById', () => {
     test('returns metadata for known id', async () => {
-      const result = await formsService.getFormMetadataById(VALID_ID)
-      expect(result.id).toBe(VALID_ID)
+      const result = await formsService.getFormMetadataById(PET_PASSPORTS_ID)
+      expect(result.id).toBe(PET_PASSPORTS_ID)
     })
 
     test('throws Boom.notFound for unknown id', async () => {
@@ -81,7 +81,7 @@ describe('formsService', () => {
 
   describe('getFormDefinition', () => {
     test('returns definition for known id', async () => {
-      const result = await formsService.getFormDefinition(VALID_ID)
+      const result = await formsService.getFormDefinition(PET_PASSPORTS_ID)
       expect(result.engine).toBe('V2')
       expect(result.pages.length).toBeGreaterThan(0)
     })
@@ -204,10 +204,23 @@ describe('formsService', () => {
           })
         ])
       )
-      expect(result.pages.at(-1).controller).toBe('SummaryPageController')
-      expect(result.pages.at(-1).components[0].content).toContain(
-        'Payment processing is not available'
+      const summaryPage = result.pages.find((page) => page.path === '/summary')
+      const paymentPage = result.pages.find(
+        (page) => page.path === '/payment-required'
       )
+
+      expect(summaryPage.controller).toBe('SummaryPageController')
+      expect(paymentPage.components[0]).toMatchObject({
+        name: 'petPassportPayment',
+        type: 'PaymentField',
+        shortDescription: 'Pet passport payment',
+        options: {
+          amount: 5600,
+          description: 'Pet passport order',
+          emailField: 'contactEmail',
+          required: true
+        }
+      })
     })
 
     test('returns the pet passport damage reporting journey', async () => {
@@ -292,7 +305,10 @@ describe('formsService', () => {
     })
 
     test('ignores state parameter and still returns definition', async () => {
-      const result = await formsService.getFormDefinition(VALID_ID, 'live')
+      const result = await formsService.getFormDefinition(
+        PET_PASSPORTS_ID,
+        'live'
+      )
       expect(result.engine).toBe('V2')
     })
 
@@ -304,10 +320,51 @@ describe('formsService', () => {
   })
 
   describe('getFormSecret', () => {
-    test('throws Boom.notFound always', async () => {
+    test('returns the GOV.UK Pay test key for the payment secret', async () => {
+      const originalApiKey = process.env.GOVUK_PAY_TEST_API_KEY
+      process.env.GOVUK_PAY_TEST_API_KEY = 'test-api-key'
+
+      try {
+        await expect(
+          formsService.getFormSecret(
+            ORDER_PET_PASSPORTS_ID,
+            'payment-live-api-key'
+          )
+        ).resolves.toBe('test-api-key')
+      } finally {
+        if (originalApiKey === undefined) {
+          delete process.env.GOVUK_PAY_TEST_API_KEY
+        } else {
+          process.env.GOVUK_PAY_TEST_API_KEY = originalApiKey
+        }
+      }
+    })
+
+    test('throws Boom.notFound for unsupported form or secret', async () => {
       await expect(
-        formsService.getFormSecret(VALID_ID, 'some-secret')
-      ).rejects.toThrow(Boom.notFound().message)
+        formsService.getFormSecret(PET_PASSPORTS_ID, 'payment-live-api-key')
+      ).rejects.toThrow('Form secret not found')
+      await expect(
+        formsService.getFormSecret(ORDER_PET_PASSPORTS_ID, 'unknown-secret')
+      ).rejects.toThrow('Form secret not found')
+    })
+
+    test('throws Boom.internal when the test key is not configured', async () => {
+      const originalApiKey = process.env.GOVUK_PAY_TEST_API_KEY
+      delete process.env.GOVUK_PAY_TEST_API_KEY
+
+      try {
+        await expect(
+          formsService.getFormSecret(
+            ORDER_PET_PASSPORTS_ID,
+            'payment-live-api-key'
+          )
+        ).rejects.toThrow('GOVUK_PAY_TEST_API_KEY not set')
+      } finally {
+        if (originalApiKey !== undefined) {
+          process.env.GOVUK_PAY_TEST_API_KEY = originalApiKey
+        }
+      }
     })
   })
 })

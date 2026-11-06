@@ -2,6 +2,8 @@ engine: V2
 schema: 2
 name: Order pet passports
 startPage: /start
+skipSummary: false
+
 options:
   showReferenceNumber: true
 sections:
@@ -104,15 +106,31 @@ pages:
     title: Check your order before payment
     path: /summary
     controller: SummaryPageController
+
+  - id: 5CF3777E-0A56-464C-AF1A-E929C2B66B32
+    title: Payment required
+    path: /payment-required
     components:
-      - name: paymentSummary
-        title: Payment summary
-        type: Html
-        content: |
-          <h2 class="govuk-heading-m">Payment summary</h2>
-          <p class="govuk-body">Pet passports</p>
-          <p class="govuk-body">The total amount for your selected quantity is shown in your order details above. Each box of 20 passports costs £56.</p>
-          <p class="govuk-body">Payment processing is not available in this service.</p>
+      - id: 0D04040C-63DB-498E-9430-9A7CDEDAA32A
+        name: petPassportPayment
+        title: Payment required
+        type: PaymentField
+        shortDescription: Pet passport payment
+        options:
+          amount: 5600
+          description: Pet passport order
+          emailField: contactEmail
+          required: true
+          conditionalAmounts:
+            - condition: 'a3b4c5d6-e7f8-4901-b234-cdef01234567'
+              amount: 112
+            - condition: 'c5d6e7f8-091a-4123-d456-ef0123456789'
+              amount: 168
+            - condition: 'e7f8091a-2b3c-4345-f678-0123456789ab'
+              amount: 224
+            - condition: '091a2b3c-4d5e-4567-b890-23456789abcd'
+              amount: 280
+
 
 lists:
   - id: 1f2a3b4c-5d6e-4f78-a901-bcdef0123456
@@ -150,4 +168,45 @@ lists:
         text: Vet Franchise 3, 27 Meadow Lane, Westbrook, Manchester, M21 4RD
         value: vet-franchise-3
 
-conditions: []
+conditions:
+  - id: 'a3b4c5d6-e7f8-4901-b234-cdef01234567'
+    displayName: selectedTwoBoxes
+    items:
+      - id: 'b4c5d6e7-f809-4012-c345-def012345678'
+        componentId: '0e1f2a3b-4c5d-4e67-f890-abcdef012345'
+        operator: is
+        type: ListItemRef
+        value:
+          listId:  '1f2a3b4c-5d6e-4f78-a901-bcdef0123456'
+          itemId: '3b4c5d6e-7f80-4123-b456-789abcdef013'
+
+  - id: 'c5d6e7f8-091a-4123-d456-ef0123456789'
+    displayName: selectedThreeBoxes
+    items:
+      - id: 'd6e7f809-1a2b-4234-e567-f0123456789a'
+        componentId: '0e1f2a3b-4c5d-4e67-f890-abcdef012345'
+        operator: is
+        type: ListItemRef
+        value:
+          listId: '1f2a3b4c-5d6e-4f78-a901-bcdef0123456'
+          itemId: '4c5d6e7f-8091-4234-c567-89abcdef0124'
+  - id: 'e7f8091a-2b3c-4345-f678-0123456789ab'
+    displayName: selectedFourBoxes
+    items:
+    - id: 'f8091a2b-3c4d-4456-a789-123456789abc'
+      componentId: '0e1f2a3b-4c5d-4e67-f890-abcdef012345'
+      operator: is
+      type: ListItemRef
+      value:
+        listId: '1f2a3b4c-5d6e-4f78-a901-bcdef0123456'
+        itemId: '5d6e7f80-91a2-4345-d678-9abcdef01235'      
+  - id: '091a2b3c-4d5e-4567-b890-23456789abcd'
+    displayName: selectedFiveBoxes
+    items:
+    - id: '1a2b3c4d-5e6f-4678-c901-3456789abcde'
+      componentId: '0e1f2a3b-4c5d-4e67-f890-abcdef012345'
+      operator: is
+      type: ListItemRef
+      value:
+        listId: '1f2a3b4c-5d6e-4f78-a901-bcdef0123456'
+        itemId: '6e7f8091-a2b3-4456-e789-abcdef012346'

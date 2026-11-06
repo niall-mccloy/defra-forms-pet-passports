@@ -37,8 +37,6 @@ We will need the following information:
 - the passport ID you want to report
 - the microchip number of the pet, if the passport was issued to an animal
 
-
-
 ---
 
 ## Page 2: Report reason

@@ -29,7 +29,7 @@ Who can order pet passports
 
 ### Content
 
-Pet passports can be ordered by the following if they work at a registered veterinary pet practice: 
+Pet passports can be ordered by the following if they work at a registered veterinary pet practice:
 
 - administrative staff
 - Official Vets (OVs)
@@ -42,7 +42,7 @@ Cost
 
 Each box of 20 passports costs £56.
 
-### Button 
+### Button
 
 Start now
 
@@ -65,6 +65,7 @@ You will need the following information
 How many pet passports do you need?
 
 Options:
+
 - 1 box of 20 passports
 - 2 boxes of 20 passports (40 passports total)
 - 3 boxes of 20 passports (60 passports total)
@@ -80,11 +81,12 @@ Continue
 ### Question
 
 Confirm delivery address
-    Hint text: Select the address where you want the passports delivered. These addresses are of practices attached to your Defra OV login account.
+Hint text: Select the address where you want the passports delivered. These addresses are of practices attached to your Defra OV login account.
 
 <!-- Addresses are dummy information for now -->
 
 Options:
+
 - Vet Franchise 1, 14 Willowbrook Crescent, Harton, Newcastle, NE9 7ZX
 - Vet Franchise 2, Unit 3, 88 Kingsway Gardens, Redbridge, London, E12 6QP
 - Vet Franchise 3, 27 Meadow Lane, Westbrook, Manchester, M21 4RD
@@ -98,13 +100,14 @@ Continue
 ### Heading
 
 Contact details
-    Hint text: Enter contact information to track your order
+Hint text: Enter contact information to track your order
 
 ### Question
 
 Full name
 
 Validation:
+
 - required
 - max 70 characters
 
@@ -113,14 +116,16 @@ Validation:
 Phone number
 
 Validation:
+
 - required
 
 ### Question
 
 Email address
-    Hint text: We'll send confirmation of your order to this email address
+Hint text: We'll send confirmation of your order to this email address
 
 Validation:
+
 - required
 - valid email address
 

@@ -20,7 +20,7 @@ URL: https://www.gov.uk/eu-eea
 "From [Date] anyone in England, Scotland and Wales must have an EU pet passport to take a cat, dog or ferret to an EU country."
 
 Link text: Official Veterinarian (OV)
-URL: https://www.gov.uk/government/collections/official-veterinarians-ovs-and-ov-practices-forms-and-guidance 
+URL: https://www.gov.uk/government/collections/official-veterinarians-ovs-and-ov-practices-forms-and-guidance
 
 "You can only get an EU pet passport from an Official Veterinarian (OV)."
 
@@ -62,12 +62,13 @@ Records of any pet passports issued must be kept for 3 years."
 Order pet passports
 
 Link text: Order pet passports
-URL: 
+URL:
 
 Link text: View your order history
-URL: 
+URL:
 
 "Vet practices can order passports in packs of 20. Find out how to:
+
 - order pet passports
 - view your order history"
 
@@ -85,7 +86,7 @@ URL:
 Report a damaged or incorrectly completed pet passport
 
 Link text: Report a damaged or incorrectly completed pet passport
-URL: 
+URL:
 
 "Report a damanged or incorrectly completed pet passports to keep passport records accurate and up to date."
 
@@ -94,10 +95,10 @@ URL:
 Register a pet passport to a pet
 
 Link text: Register a pet passport
-URL: 
+URL:
 
 Link text: manage pet passport records
-URL: 
+URL:
 
 "Register a pet passport to the microchip number of a cat, dog or ferret. You can also managed pet passport records to see passports that have been registered."
 
@@ -107,18 +108,20 @@ URL:
 
 How do you want to sign in?
 
-Options: 
-- Sign in with GOV UK One Login 
-    Hint text: Use your email and password. IF you don't have a GOV.UK One Login account, you can create one.
+Options:
+
+- Sign in with GOV UK One Login
+  Hint text: Use your email and password. IF you don't have a GOV.UK One Login account, you can create one.
 - Sign in with Government Gateway
-    Hint text: Use your Government Gateway user ID which can be up to 12 characters. You may have a Government Gateway user ID if you have used other GOV.UK services.
+  Hint text: Use your Government Gateway user ID which can be up to 12 characters. You may have a Government Gateway user ID if you have used other GOV.UK services.
 
 Validation:
+
 - Selection required
 
 ## Page 3: If vet needs to register
 
-## Heading 
+## Heading
 
 Your Defra account
 
@@ -132,6 +135,7 @@ You have signed out. To sign in again, click on Your Defra account
 <!-- All bullet points below are links. You do not have to connect them to an URL at this text but make sure they look like links -->
 
 To continue registering for online services from Defra and related organisations, select a service below:
+
 - Apply for a CITES Permit
 - Apply for and managed environmental permissions
 - Apply for Plant Export Certificates and Inspections
@@ -144,6 +148,5 @@ To continue registering for online services from Defra and related organisations
 - IPAFFS
 - Nutrient Management Planning
 - Record reprocessed or exported packaging waste
-- Report receipt of waste 
+- Report receipt of waste
 - Order pet passports
-
