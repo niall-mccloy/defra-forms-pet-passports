@@ -33,7 +33,10 @@ export default {
       '@defra/forms-model',
       'nanoid',
       'slug',
-      'geodesy'
+      'geodesy',
+      'openid-client',
+      'oauth4webapi',
+      'jose'
     ].join('|')}/)`
   ]
 }

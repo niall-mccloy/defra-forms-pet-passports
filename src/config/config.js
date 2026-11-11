@@ -208,6 +208,39 @@ export const config = convict({
       default: isDevelopment
     }
   },
+  oidc: {
+    issuerUrl: {
+      doc: 'OIDC issuer URL',
+      format: String,
+      default: 'http://localhost:3200/cdp-defra-id-stub',
+      env: 'OIDC_ISSUER_URL'
+    },
+    clientId: {
+      doc: 'OIDC client ID',
+      format: String,
+      default: '63983fc2-cfff-45bb-8ec2-959e21062b9a',
+      env: 'OIDC_CLIENT_ID'
+    },
+    clientSecret: {
+      doc: 'OIDC client secret',
+      format: String,
+      default: '',
+      env: 'OIDC_CLIENT_SECRET',
+      sensitive: true
+    },
+    redirectUri: {
+      doc: 'OIDC callback URI',
+      format: String,
+      default: 'http://localhost:3000/oidc/callback',
+      env: 'OIDC_REDIRECT_URI'
+    },
+    scope: {
+      doc: 'OIDC scopes',
+      format: String,
+      default: 'openid profile email',
+      env: 'OIDC_SCOPE'
+    }
+  },
   tracing: {
     header: {
       doc: 'Which header to track',
