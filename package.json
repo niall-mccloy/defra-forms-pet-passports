@@ -38,7 +38,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@defra/forms-engine-plugin": "^5.0.0-alpha.24",
-    "@defra/hapi-tracing": "^1.30.0",
+    "@defra/hapi-tracing": "^1.30.2",
     "@elastic/ecs-pino-format": "^1.5.0",
     "@hapi/boom": "^10.0.1",
     "@hapi/catbox-memory": "^6.0.2",
@@ -56,7 +56,7 @@
     "govuk-frontend": "^5.14.0",
     "hapi-pino": "^13.0.0",
     "hapi-pulse": "^3.0.1",
-    "ioredis": "^5.11.1",
+    "ioredis": "^6.0.0",
     "lodash": "^4.18.1",
     "mongodb": "^7.8.0",
     "node-fetch": "^3.3.2",
