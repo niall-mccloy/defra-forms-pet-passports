@@ -1,0 +1,46 @@
+{% extends 'layouts/page.njk' %}
+
+{% macro renderAnswers(answers) %}
+  <dl class="govuk-summary-list">
+    {% for answer in answers %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ answer.title }}</dt>
+        <dd class="govuk-summary-list__value">
+          {% if answer.subItems %}
+            {% for row in answer.subItems %}
+              <h3 class="govuk-heading-s">Entry {{ loop.index }}</h3>
+              {{ renderAnswers(row) }}
+            {% endfor %}
+          {% else %}
+            <pre class="govuk-body govuk-!-margin-0 app-submission-answer">{{ answer.value }}</pre>
+          {% endif %}
+        </dd>
+      </div>
+    {% endfor %}
+  </dl>
+{% endmacro %}
+
+{% block content %}
+  <a class="govuk-back-link" href="/submissions">Back to submissions</a>
+  <h1 class="govuk-heading-xl">Submission details</h1>
+  <dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Form</dt>
+      <dd class="govuk-summary-list__value">{{ submission.form.title }}</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Submission ID</dt>
+      <dd class="govuk-summary-list__value">{{ submission.id }}</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Submitted at (UTC)</dt>
+      <dd class="govuk-summary-list__value">{{ submission.submittedAt }}</dd>
+    </div>
+  </dl>
+  <h2 class="govuk-heading-l">Answers</h2>
+  {% if submission.answers.length %}
+    {{ renderAnswers(submission.answers) }}
+  {% else %}
+    <p class="govuk-body">No answers recorded.</p>
+  {% endif %}
+{% endblock %}

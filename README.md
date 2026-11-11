@@ -13,6 +13,7 @@ Core delivery platform Node.js Frontend Template.
 - [Local Development](#local-development)
   - [Setup](#setup)
   - [Development](#development)
+  - [Local submission viewer](#local-submission-viewer)
   - [Production](#production)
   - [Npm scripts](#npm-scripts)
   - [Update dependencies](#update-dependencies)
@@ -97,6 +98,36 @@ To run the application in `development` mode run:
 ```bash
 npm run dev
 ```
+
+### Local submission viewer
+
+The read-only viewer lists all forms saved in MongoDB, newest first, with 25
+submissions per page and a detail page for each submission, including nested
+answers. It has no editing, filtering or export functionality.
+
+Start MongoDB (for example, `docker compose up -d mongodb`) and set these values
+in your local `.env` file:
+
+```dotenv
+NODE_ENV=development
+ENABLE_SUBMISSION_VIEWER=true
+MONGODB_URI=mongodb://127.0.0.1:27017
+MONGODB_DATABASE=pet_passports
+```
+
+Run `npm run dev`, then visit <http://127.0.0.1:3000/submissions> or use the
+homepage's "View form submissions" link. Use the same database settings as your
+form submissions; `MONGODB_DATABASE` defaults to `pet_passports`.
+
+The flag defaults to false. Routes and the homepage link are only enabled in
+development with the flag set, and enabling the viewer binds the whole app to
+`127.0.0.1`. It is intended for running the app directly on your computer, not
+through Docker port forwarding or another device. No sign-in is required:
+use only local test data, and do not deploy this viewer or expose it through a
+proxy/tunnel. Existing form sign-in requirements are unchanged.
+
+Database failures produce the application's normal error page and server log,
+not an empty submissions list. Viewing submissions does not modify them.
 
 ### Production
 

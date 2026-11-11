@@ -1,1 +1,6 @@
 @use "govuk-frontend";
+
+.app-submission-answer {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

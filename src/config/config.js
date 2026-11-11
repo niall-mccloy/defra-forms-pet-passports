@@ -31,6 +31,12 @@ export const config = convict({
     default: 3000,
     env: 'PORT'
   },
+  submissionViewerEnabled: {
+    doc: 'Enable the local-only, read-only submission viewer in development',
+    format: Boolean,
+    default: false,
+    env: 'ENABLE_SUBMISSION_VIEWER'
+  },
   staticCacheTimeout: {
     doc: 'Static cache timeout in milliseconds',
     format: Number,
@@ -252,6 +258,12 @@ export const config = convict({
 })
 
 config.validate({ allowed: 'strict' })
+
+export function isSubmissionViewerEnabled() {
+  return (
+    config.get('env') === 'development' && config.get('submissionViewerEnabled')
+  )
+}
 
 /**
  * @import { Schema, SchemaObj } from 'convict'

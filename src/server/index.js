@@ -4,7 +4,7 @@ import plugin from '@defra/forms-engine-plugin'
 import crumb from '@hapi/crumb'
 import hapi from '@hapi/hapi'
 
-import { config } from '~/src/config/config.js'
+import { config, isSubmissionViewerEnabled } from '~/src/config/config.js'
 import { nunjucksConfig } from '~/src/config/nunjucks/nunjucks.js'
 import { router } from './router.js'
 import { requestLogger } from '~/src/server/common/helpers/logging/request-logger.js'
@@ -24,6 +24,7 @@ export async function createServer() {
   setupProxy()
   const server = hapi.server({
     port: config.get('port'),
+    ...(isSubmissionViewerEnabled() ? { host: '127.0.0.1' } : {}),
     routes: {
       validate: {
         options: {

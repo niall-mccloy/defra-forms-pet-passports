@@ -3,6 +3,8 @@ import inert from '@hapi/inert'
 import { health } from '~/src/server/health/index.js'
 import { auth } from '~/src/server/auth/index.js'
 import { home } from '~/src/server/home/index.js'
+import { submissions } from '~/src/server/submissions/index.js'
+import { isSubmissionViewerEnabled } from '~/src/config/config.js'
 import { serveStaticFiles } from '~/src/server/common/helpers/serve-static-files.js'
 
 /**
@@ -20,6 +22,9 @@ export const router = {
       // Application specific routes, add your own routes here
       await server.register([auth])
       await server.register([home])
+      if (isSubmissionViewerEnabled()) {
+        await server.register([submissions])
+      }
 
       // Static assets
       await server.register([serveStaticFiles])

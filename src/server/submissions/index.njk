@@ -1,0 +1,42 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Form submissions</h1>
+  <p class="govuk-body">Local development only. Submissions are shown newest first.</p>
+  {% if submissions.length %}
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Saved submissions</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Form</th>
+          <th class="govuk-table__header" scope="col">Submitted at (UTC)</th>
+          <th class="govuk-table__header" scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for submission in submissions %}
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="row">{{ submission.title }}</th>
+            <td class="govuk-table__cell"><time datetime="{{ submission.submittedAt }}">{{ submission.submittedAt }}</time></td>
+            <td class="govuk-table__cell">
+              <a class="govuk-link" href="/submissions/{{ submission.id }}">View details<span class="govuk-visually-hidden"> for {{ submission.title }}, {{ submission.submittedAt }}, {{ submission.id }}</span></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="govuk-body">No submissions found.</p>
+  {% endif %}
+  <nav aria-label="Pagination">
+    <p class="govuk-body">Page {{ page }}</p>
+    <ul class="govuk-list">
+      {% if previousPage %}
+        <li><a class="govuk-link" href="/submissions?page={{ previousPage }}" rel="prev">Previous page</a></li>
+      {% endif %}
+      {% if nextPage %}
+        <li><a class="govuk-link" href="/submissions?page={{ nextPage }}" rel="next">Next page</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endblock %}
