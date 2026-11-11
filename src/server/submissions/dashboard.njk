@@ -1,0 +1,84 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Submission dashboard</h1>
+  <p class="govuk-body">Local development only. Reporting periods use UK time and include submissions up to now.</p>
+
+  <h2 class="govuk-heading-l">Overview</h2>
+  <dl class="govuk-summary-list">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Forms with submissions</dt>
+      <dd class="govuk-summary-list__value">{{ forms.length }}</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Total submissions</dt>
+      <dd class="govuk-summary-list__value">{{ totals.submissions }}</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Submissions today</dt>
+      <dd class="govuk-summary-list__value">{{ totals.today }}</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Submissions this week (from Monday)</dt>
+      <dd class="govuk-summary-list__value">{{ totals.week }}</dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Submissions this month</dt>
+      <dd class="govuk-summary-list__value">{{ totals.month }}</dd>
+    </div>
+  </dl>
+
+  <h2 class="govuk-heading-l">Submissions by form</h2>
+  {% if forms.length or totals.unattributed %}
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Form</th>
+          <th class="govuk-table__header govuk-table__header--numeric" scope="col">Submissions</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for form in forms %}
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="row"><a class="govuk-link" href="{{ form.href }}">{{ form.title }}</a></th>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ form.count }}</td>
+          </tr>
+        {% endfor %}
+        {% if totals.unattributed %}
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="row"><a class="govuk-link" href="/submissions/unattributed">Unattributed submissions</a></th>
+            <td class="govuk-table__cell govuk-table__cell--numeric">{{ totals.unattributed }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+    <p class="govuk-body">Unattributed submissions have no form ID and are not included in the form count.</p>
+  {% else %}
+    <p class="govuk-body">No submissions found.</p>
+  {% endif %}
+
+  <h2 class="govuk-heading-l">Recent submissions</h2>
+  {% if recent.length %}
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Form</th>
+          <th class="govuk-table__header" scope="col">Submitted at (UTC)</th>
+          <th class="govuk-table__header" scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for submission in recent %}
+          <tr class="govuk-table__row">
+            <th class="govuk-table__header" scope="row">{{ submission.title }}</th>
+            <td class="govuk-table__cell">{{ submission.submittedAt }}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="/submissions/{{ submission.id }}">View details<span class="govuk-visually-hidden"> for {{ submission.title }}, {{ submission.submittedAt }}, {{ submission.id }}</span></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="govuk-body">No recent submissions.</p>
+  {% endif %}
+  <p class="govuk-body"><a class="govuk-link" href="/submissions">View all submissions</a></p>
+{% endblock %}

@@ -101,9 +101,19 @@ npm run dev
 
 ### Local submission viewer
 
-The read-only viewer lists all forms saved in MongoDB, newest first, with 25
-submissions per page and a detail page for each submission, including nested
-answers. It has no editing, filtering or export functionality.
+The read-only submission dashboard shows totals, recent submissions and
+submission counts by form, with links to paginated form-specific lists and
+individual submissions, including nested answers. The existing all-submissions
+viewer remains available, with 25 submissions per page. There is no editing or
+export functionality.
+
+The form count includes distinct non-empty form IDs found in saved submissions,
+including historical forms, not configured forms without submissions.
+Submissions without a usable form ID are shown separately and included in
+submission totals. Today, this week (from Monday) and this month are calendar
+periods in UK time up to the time the dashboard is loaded; future timestamps
+and missing or invalid timestamps are excluded from those period counts but
+remain in all-time totals. Counts are live reads and can change between pages.
 
 Start MongoDB (for example, `docker compose up -d mongodb`) and set these values
 in your local `.env` file:
@@ -115,8 +125,9 @@ MONGODB_URI=mongodb://127.0.0.1:27017
 MONGODB_DATABASE=pet_passports
 ```
 
-Run `npm run dev`, then visit <http://127.0.0.1:3000/submissions> or use the
-homepage's "View form submissions" link. Use the same database settings as your
+Run `npm run dev`, then visit <http://127.0.0.1:3000/submissions/dashboard>
+or use the homepage's "View submission dashboard" link. The existing viewer is
+at <http://127.0.0.1:3000/submissions>. Use the same database settings as your
 form submissions; `MONGODB_DATABASE` defaults to `pet_passports`.
 
 The flag defaults to false. Routes and the homepage link are only enabled in
@@ -128,6 +139,19 @@ proxy/tunnel. Existing form sign-in requirements are unchanged.
 
 Database failures produce the application's normal error page and server log,
 not an empty submissions list. Viewing submissions does not modify them.
+For larger datasets, review MongoDB indexes on `submittedAt` and on
+`form.id`, `submittedAt`, and `_id` together; this POC does not create indexes
+automatically. The dashboard aggregates live data and is intended for small
+local datasets.
+
+To run the MongoDB reporting integration tests against a local MongoDB instance:
+
+```bash
+TEST_MONGODB_URI=mongodb://127.0.0.1:27017 node --test test/submission-report.integration.js
+```
+
+The tests create and remove a uniquely named test collection in a dedicated
+temporary database. They do not use the configured submissions database.
 
 ### Production
 

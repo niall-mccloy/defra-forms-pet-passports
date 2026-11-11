@@ -1,0 +1,39 @@
+{% extends 'layouts/page.njk' %}
+
+{% block content %}
+  <a class="govuk-back-link" href="/submissions/dashboard">Back to dashboard</a>
+  <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
+  <p class="govuk-body">Total submissions: {{ count }}</p>
+  {% if submissions.length %}
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">Saved submissions</caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Submitted at (UTC)</th>
+          <th class="govuk-table__header" scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        {% for submission in submissions %}
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ submission.submittedAt }}</td>
+            <td class="govuk-table__cell"><a class="govuk-link" href="/submissions/{{ submission.id }}?{{ submission.detailQuery }}">View details<span class="govuk-visually-hidden"> for {{ submission.title }}, {{ submission.submittedAt }}, {{ submission.id }}</span></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="govuk-body">No submissions found on this page.</p>
+  {% endif %}
+  <nav aria-label="Pagination">
+    <p class="govuk-body">Page {{ page }}</p>
+    <ul class="govuk-list">
+      {% if previousPage %}
+        <li><a class="govuk-link" href="{{ previousPage }}" rel="prev">Previous page</a></li>
+      {% endif %}
+      {% if nextPage %}
+        <li><a class="govuk-link" href="{{ nextPage }}" rel="next">Next page</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endblock %}

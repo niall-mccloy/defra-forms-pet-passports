@@ -21,7 +21,9 @@ describe('submission store', () => {
     collection = {
       insertOne: jest.fn().mockResolvedValue({ acknowledged: true }),
       find: jest.fn(),
-      findOne: jest.fn()
+      findOne: jest.fn(),
+      countDocuments: jest.fn(),
+      aggregate: jest.fn()
     }
     cursor = {
       sort: jest.fn().mockReturnThis(),
@@ -125,5 +127,18 @@ describe('submission store', () => {
   test('propagates query failures', async () => {
     cursor.toArray.mockRejectedValue(new Error('Query failed'))
     await expect(store.listSubmissions(1)).rejects.toThrow('Query failed')
+  })
+
+  test('propagates reporting and filtered-count failures', async () => {
+    collection.aggregate.mockReturnValue({
+      toArray: jest.fn().mockRejectedValue(new Error('Aggregation failed'))
+    })
+    collection.countDocuments.mockRejectedValue(new Error('Count failed'))
+    await expect(store.getSubmissionReport()).rejects.toThrow(
+      'Aggregation failed'
+    )
+    await expect(store.listFormSubmissions('form-id', 1)).rejects.toThrow(
+      'Count failed'
+    )
   })
 })

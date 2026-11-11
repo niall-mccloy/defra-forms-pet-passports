@@ -1,4 +1,9 @@
-import { submissionController, submissionsController } from './controller.js'
+import {
+  dashboardController,
+  formSubmissionsController,
+  submissionController,
+  submissionsController
+} from './controller.js'
 
 /**
  * @satisfies {ServerRegisterPluginObject<void>}
@@ -12,6 +17,21 @@ export const submissions = {
           method: 'GET',
           path: '/submissions',
           ...submissionsController
+        },
+        {
+          method: 'GET',
+          path: '/submissions/dashboard',
+          ...dashboardController
+        },
+        {
+          method: 'GET',
+          path: '/submissions/unattributed',
+          ...formSubmissionsController
+        },
+        {
+          method: 'GET',
+          path: '/submissions/forms/{formId}',
+          ...formSubmissionsController
         },
         {
           method: 'GET',
