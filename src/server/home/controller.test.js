@@ -73,6 +73,16 @@ describe('#homeController', () => {
     expect(headers.location).toBe('/auth/login')
   })
 
+  test('Should redirect anonymous order form submissions to sign in', async () => {
+    const { headers, statusCode } = await server.inject({
+      method: 'POST',
+      url: '/order-pet-passports/start'
+    })
+
+    expect(statusCode).toBe(302)
+    expect(headers.location).toBe('/auth/login')
+  })
+
   test('Should not intercept the OIDC callback', async () => {
     const { statusCode } = await server.inject({
       method: 'GET',
