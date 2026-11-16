@@ -1,5 +1,16 @@
 @use "govuk-frontend";
 
+.app-service-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  @media (min-width: 1020px) {
+    padding-right: 132px;
+  }
+}
+
 .app-submission-answer {
   white-space: pre-wrap;
   overflow-wrap: anywhere;

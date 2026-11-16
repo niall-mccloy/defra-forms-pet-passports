@@ -11,11 +11,14 @@ export const loginController = {
     const state = oidc.randomState()
     const nonce = oidc.randomNonce()
 
+    const returnTo = request.yar.get('loginReturnTo') ?? '/'
+    request.yar.clear('loginReturnTo')
+
     request.yar.set('oidcTransaction', {
       codeVerifier,
       state,
       nonce,
-      returnTo: '/order-pet-passports/start'
+      returnTo
     })
 
     const authorizationUrl = oidc.buildAuthorizationUrl(oidcConfiguration, {

@@ -15,7 +15,8 @@ describe('authGuard', () => {
     redirect = { takeover: jest.fn().mockReturnValue('redirected') }
     request = {
       params: { slug: 'order-pet-passports' },
-      yar: { get: jest.fn() },
+      path: '/order-pet-passports/start',
+      yar: { get: jest.fn(), set: jest.fn() },
       logger: { warn: jest.fn(), error: jest.fn() }
     }
     h = {
@@ -129,9 +130,55 @@ describe('authGuard', () => {
 
   test('does not restrict unrelated routes', async () => {
     request.params.slug = 'pet-passports'
+    request.path = '/pet-passports/start'
 
     expect(await authGuard(request, h)).toBe(h.continue)
     expect(request.yar.get).not.toHaveBeenCalled()
+    expect(isCertifiedVet).not.toHaveBeenCalled()
+  })
+
+  test.each(['/submissions', '/submissions/dashboard', '/submissions/example'])(
+    'redirects an anonymous visitor to %s and saves the return destination',
+    async (path) => {
+      request.params = {}
+      request.path = path
+
+      expect(await authGuard(request, h)).toBe('redirected')
+      expect(request.yar.set).toHaveBeenCalledWith(
+        'loginReturnTo',
+        '/submissions'
+      )
+      expect(isCertifiedVet).not.toHaveBeenCalled()
+    }
+  )
+
+  test('allows approved admins to view submissions without vet certification', async () => {
+    request.params = {}
+    request.path = '/submissions/dashboard'
+    request.yar.get.mockReturnValue({
+      sub: 'test-admin',
+      currentRelationshipId: relationshipId,
+      roles: [`${relationshipId}:Admin:Complete`]
+    })
+
+    expect(await authGuard(request, h)).toBe(h.continue)
+    expect(isCertifiedVet).not.toHaveBeenCalled()
+  })
+
+  test.each([
+    'relationship-123:vet:complete',
+    'relationship-123:admin:pending',
+    'other-relationship:admin:complete'
+  ])('denies submissions access with role %s', async (role) => {
+    request.params = {}
+    request.path = '/submissions/dashboard'
+    request.yar.get.mockReturnValue({
+      sub: 'test-user',
+      currentRelationshipId: relationshipId,
+      roles: [role]
+    })
+
+    expect((await authGuard(request, h)).output.statusCode).toBe(403)
     expect(isCertifiedVet).not.toHaveBeenCalled()
   })
 })

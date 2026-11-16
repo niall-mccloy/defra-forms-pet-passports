@@ -1,3 +1,5 @@
+import { isSubmissionViewerEnabled } from '~/src/config/config.js'
+
 /**
  * @param {Partial<Request> | null} request
  */
@@ -24,7 +26,18 @@ export function buildNavigation(request) {
       text: 'Report pet passport damage',
       href: '/report-pet-passport-damage/start',
       active: request?.path?.startsWith('/report-pet-passport-damage')
-    }
+    },
+    ...(isSubmissionViewerEnabled()
+      ? [
+          {
+            text: 'Submissions dashboard',
+            href: '/submissions/dashboard',
+            active:
+              request?.path === '/submissions' ||
+              request?.path?.startsWith('/submissions/')
+          }
+        ]
+      : [])
   ]
 }
 

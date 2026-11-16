@@ -45,7 +45,7 @@ export const callbackController = {
         roles: claims.roles
       })
 
-      return h.redirect(transaction.returnTo ?? '/order-pet-passports/start')
+      return h.redirect(transaction.returnTo ?? '/')
     } catch (error) {
       request.yar.clear('oidcTransaction')
       request.logger.error({ err: error }, 'OIDC callback failed')

@@ -33,6 +33,7 @@ export function context(request) {
     serviceUrl: '/',
     breadcrumbs: [],
     navigation: buildNavigation(request),
+    isSignedIn: Boolean(request?.yar?.get('user')),
 
     /**
      * @param {string} asset

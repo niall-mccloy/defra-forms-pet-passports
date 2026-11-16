@@ -28,14 +28,43 @@ const metadata = {
   submittedAt: '2026-11-11T12:00:00.000Z'
 }
 
+function registerAdminSessionRoute(server) {
+  server.route({
+    method: 'GET',
+    path: '/test/admin-session',
+    handler(request, h) {
+      request.yar.set('user', {
+        sub: 'test-admin',
+        currentRelationshipId: 'test-relationship',
+        roles: ['test-relationship:admin:complete']
+      })
+      return h.redirect('/')
+    }
+  })
+}
+
+async function getAdminCookie(server) {
+  const response = await server.inject('/test/admin-session')
+  return response.headers['set-cookie']
+    .map((cookie) => cookie.split(';')[0])
+    .join('; ')
+}
+
 describe('local submission viewer', () => {
   let server
+  let adminCookie
+
+  function injectAsAdmin(url) {
+    return server.inject({ url, headers: { cookie: adminCookie } })
+  }
 
   beforeAll(async () => {
     config.set('env', 'development')
     config.set('submissionViewerEnabled', true)
     server = await createServer()
+    registerAdminSessionRoute(server)
     await server.initialize()
+    adminCookie = await getAdminCookie(server)
   })
 
   beforeEach(() => {
@@ -68,12 +97,12 @@ describe('local submission viewer', () => {
     expect(response.statusCode).toBe(200)
     expect(load(response.payload)('a[href="/submissions"]')).toHaveLength(1)
     expect(
-      load(response.payload)('a[href="/submissions/dashboard"]')
+      load(response.payload)('main a[href="/submissions/dashboard"]')
     ).toHaveLength(1)
   })
 
   test('shows reporting metrics, form links and recent submissions', async () => {
-    const response = await server.inject('/submissions/dashboard')
+    const response = await injectAsAdmin('/submissions/dashboard')
     const $ = load(response.payload)
     expect(response.statusCode).toBe(200)
     expect(response.headers['cache-control']).toBe('no-store')
@@ -95,7 +124,7 @@ describe('local submission viewer', () => {
       forms: [],
       recent: []
     })
-    const response = await server.inject('/submissions/dashboard')
+    const response = await injectAsAdmin('/submissions/dashboard')
     expect(response.payload).toContain('No submissions found.')
     expect(response.payload).toContain('No recent submissions.')
   })
@@ -106,12 +135,12 @@ describe('local submission viewer', () => {
       forms: [{ _id: 'form/one & two', title: 'Special form', count: 1 }],
       recent: []
     })
-    const dashboard = await server.inject('/submissions/dashboard')
+    const dashboard = await injectAsAdmin('/submissions/dashboard')
     const $ = load(dashboard.payload)
     const href = $('a')
       .filter((_, element) => $(element).text() === 'Special form')
       .attr('href')
-    const response = await server.inject(href)
+    const response = await injectAsAdmin(href)
     expect(response.statusCode).toBe(200)
     expect(listFormSubmissions).toHaveBeenCalledWith('form/one & two', 1)
   })
@@ -122,7 +151,7 @@ describe('local submission viewer', () => {
       submissions: [{ ...metadata, form: { id: 'form-1', title: '<Form>' } }],
       hasNextPage: true
     })
-    const response = await server.inject('/submissions/forms/form-1?page=2')
+    const response = await injectAsAdmin('/submissions/forms/form-1?page=2')
     const $ = load(response.payload)
     expect(response.statusCode).toBe(200)
     expect(response.headers['cache-control']).toBe('no-store')
@@ -142,12 +171,12 @@ describe('local submission viewer', () => {
       form: { id: 'form-1', title: 'Form' },
       answers: []
     })
-    const detail = await server.inject(detailUrl)
+    const detail = await injectAsAdmin(detailUrl)
     expect(load(detail.payload)('a.govuk-back-link').attr('href')).toBe(
       '/submissions/forms/form-1?page=2'
     )
     expect(
-      (await server.inject(`/submissions/${id.toHexString()}?fromForm=another`))
+      (await injectAsAdmin(`/submissions/${id.toHexString()}?fromForm=another`))
         .statusCode
     ).toBe(400)
   })
@@ -158,10 +187,10 @@ describe('local submission viewer', () => {
       submissions: [{ ...metadata, form: {} }],
       hasNextPage: false
     })
-    const response = await server.inject('/submissions/unattributed')
+    const response = await injectAsAdmin('/submissions/unattributed')
     expect(listFormSubmissions).toHaveBeenCalledWith(null, 1)
     getSubmission.mockResolvedValue({ ...metadata, form: {}, answers: [] })
-    const detail = await server.inject(
+    const detail = await injectAsAdmin(
       load(response.payload)('tbody a').attr('href')
     )
     expect(load(detail.payload)('a.govuk-back-link').attr('href')).toBe(
@@ -171,14 +200,14 @@ describe('local submission viewer', () => {
 
   test('rejects invalid filtered pages and missing forms', async () => {
     expect(
-      (await server.inject('/submissions/forms/form-1?page=0')).statusCode
+      (await injectAsAdmin('/submissions/forms/form-1?page=0')).statusCode
     ).toBe(400)
     listFormSubmissions.mockResolvedValue({
       count: 0,
       submissions: [],
       hasNextPage: false
     })
-    expect((await server.inject('/submissions/forms/missing')).statusCode).toBe(
+    expect((await injectAsAdmin('/submissions/forms/missing')).statusCode).toBe(
       404
     )
   })
@@ -190,14 +219,14 @@ describe('local submission viewer', () => {
   ])('reports database failures for %s', async (url) => {
     getSubmissionReport.mockRejectedValue(new Error('Database unavailable'))
     listFormSubmissions.mockRejectedValue(new Error('Database unavailable'))
-    const response = await server.inject(url)
+    const response = await injectAsAdmin(url)
     expect(response.statusCode).toBe(500)
     expect(response.payload).toContain('Something went wrong')
     expect(response.payload).not.toContain('Database unavailable')
   })
 
-  test('renders summary links without loading answers or requiring login', async () => {
-    const response = await server.inject('/submissions')
+  test('renders summary links for an admin without loading answers', async () => {
+    const response = await injectAsAdmin('/submissions')
     const $ = load(response.payload)
     expect(response.statusCode).toBe(200)
     expect(response.headers['cache-control']).toBe('no-store')
@@ -216,7 +245,7 @@ describe('local submission viewer', () => {
       submissions: [metadata],
       hasNextPage: true
     })
-    const response = await server.inject('/submissions?page=2')
+    const response = await injectAsAdmin('/submissions?page=2')
     const $ = load(response.payload)
     expect(listSubmissions).toHaveBeenCalledWith(2)
     expect($('a[rel="prev"]').attr('href')).toBe('/submissions?page=1')
@@ -225,7 +254,7 @@ describe('local submission viewer', () => {
 
   test('renders an empty state', async () => {
     listSubmissions.mockResolvedValue({ submissions: [], hasNextPage: false })
-    const response = await server.inject('/submissions')
+    const response = await injectAsAdmin('/submissions')
     expect(response.statusCode).toBe(200)
     expect(response.payload).toContain('No submissions found.')
   })
@@ -233,7 +262,7 @@ describe('local submission viewer', () => {
   test.each(['0', '-1', '1.5', 'abc', '', '9007199254740991', '1&page=2'])(
     'rejects invalid page %s',
     async (page) => {
-      const response = await server.inject(`/submissions?page=${page}`)
+      const response = await injectAsAdmin(`/submissions?page=${page}`)
       expect(response.statusCode).toBe(400)
       expect(listSubmissions).not.toHaveBeenCalled()
     }
@@ -264,7 +293,7 @@ describe('local submission viewer', () => {
         }
       ]
     })
-    const response = await server.inject(`/submissions/${id.toHexString()}`)
+    const response = await injectAsAdmin(`/submissions/${id.toHexString()}`)
     const $ = load(response.payload)
     expect(response.statusCode).toBe(200)
     expect(response.headers['cache-control']).toBe('no-store')
@@ -287,14 +316,14 @@ describe('local submission viewer', () => {
   })
 
   test('renders details without answers', async () => {
-    const response = await server.inject(`/submissions/${id.toHexString()}`)
+    const response = await injectAsAdmin(`/submissions/${id.toHexString()}`)
     expect(response.payload).toContain('No answers recorded.')
   })
 
   test('returns 404 for missing or invalid IDs', async () => {
     getSubmission.mockResolvedValue(null)
     for (const value of [id.toHexString(), 'bad-id']) {
-      expect((await server.inject(`/submissions/${value}`)).statusCode).toBe(
+      expect((await injectAsAdmin(`/submissions/${value}`)).statusCode).toBe(
         404
       )
     }
@@ -305,7 +334,7 @@ describe('local submission viewer', () => {
     async (kind) => {
       listSubmissions.mockRejectedValue(new Error('Database unavailable'))
       getSubmission.mockRejectedValue(new Error('Database unavailable'))
-      const response = await server.inject(
+      const response = await injectAsAdmin(
         kind === 'list' ? '/submissions' : `/submissions/${id.toHexString()}`
       )
       expect(response.statusCode).toBe(500)
@@ -320,6 +349,14 @@ describe('local submission viewer', () => {
     expect(response.statusCode).toBe(302)
     expect(response.headers.location).toBe('/auth/login')
   })
+
+  test('redirects anonymous dashboard visitors before loading submissions', async () => {
+    const response = await server.inject('/submissions/dashboard')
+
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe('/auth/login')
+    expect(getSubmissionReport).not.toHaveBeenCalled()
+  })
 })
 
 describe.each([
@@ -328,12 +365,15 @@ describe.each([
   ['test', true]
 ])('disabled viewer in %s with flag %s', (env, enabled) => {
   let server
+  let adminCookie
 
   beforeAll(async () => {
     config.set('env', env)
     config.set('submissionViewerEnabled', enabled)
     server = await createServer()
+    registerAdminSessionRoute(server)
     await server.initialize()
+    adminCookie = await getAdminCookie(server)
   })
 
   afterAll(async () => {
@@ -343,16 +383,35 @@ describe.each([
   })
 
   test('has no viewer routes or homepage link', async () => {
-    expect((await server.inject('/submissions')).statusCode).toBe(404)
     expect(
-      (await server.inject(`/submissions/${id.toHexString()}`)).statusCode
+      (
+        await server.inject({
+          url: '/submissions',
+          headers: { cookie: adminCookie }
+        })
+      ).statusCode
+    ).toBe(404)
+    expect(
+      (
+        await server.inject({
+          url: `/submissions/${id.toHexString()}`,
+          headers: { cookie: adminCookie }
+        })
+      ).statusCode
     ).toBe(404)
     for (const path of [
       '/submissions/dashboard',
       '/submissions/forms/form-1',
       '/submissions/unattributed'
     ]) {
-      expect((await server.inject(path)).statusCode).not.toBe(200)
+      expect(
+        (
+          await server.inject({
+            url: path,
+            headers: { cookie: adminCookie }
+          })
+        ).statusCode
+      ).not.toBe(200)
     }
     expect(
       server.table().some((route) => route.path === '/submissions/dashboard')

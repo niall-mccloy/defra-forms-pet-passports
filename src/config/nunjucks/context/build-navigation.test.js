@@ -1,4 +1,9 @@
 import { buildNavigation } from '~/src/config/nunjucks/context/build-navigation.js'
+import { isSubmissionViewerEnabled } from '~/src/config/config.js'
+
+jest.mock('~/src/config/config.js', () => ({
+  isSubmissionViewerEnabled: jest.fn()
+}))
 
 /**
  * @param {Partial<Request>} [options]
@@ -8,6 +13,33 @@ function mockRequest(options) {
 }
 
 describe('#buildNavigation', () => {
+  beforeEach(() => {
+    isSubmissionViewerEnabled.mockReturnValue(false)
+  })
+
+  test.each(['/submissions', '/submissions/dashboard', '/submissions/example'])(
+    'shows and highlights the enabled submissions dashboard on %s',
+    (path) => {
+      isSubmissionViewerEnabled.mockReturnValue(true)
+
+      expect(buildNavigation(mockRequest({ path }))).toContainEqual({
+        text: 'Submissions dashboard',
+        href: '/submissions/dashboard',
+        active: true
+      })
+    }
+  )
+
+  test('does not highlight the dashboard on unrelated pages', () => {
+    isSubmissionViewerEnabled.mockReturnValue(true)
+
+    expect(buildNavigation(mockRequest({ path: '/' }))).toContainEqual({
+      text: 'Submissions dashboard',
+      href: '/submissions/dashboard',
+      active: false
+    })
+  })
+
   test('Should provide expected navigation details', () => {
     expect(
       buildNavigation(mockRequest({ path: '/non-existent-path' }))

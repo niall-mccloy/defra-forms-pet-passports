@@ -16,9 +16,24 @@
   {{ govukHeader({
     homepageUrl: "https://www.gov.uk/"
   }) }}
+  {% set serviceHeading %}
+    <div class="app-service-heading">
+      <span class="govuk-service-navigation__service-name">
+        <a href="/" class="govuk-service-navigation__link">Forms demo</a>
+      </span>
+      {% if isSignedIn %}
+      <form method="post" action="/auth/logout">
+        <input type="hidden" name="crumb" value="{{ crumb }}">
+        <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-0">
+          Sign out
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  {% endset %}
   {{ govukServiceNavigation({
-    serviceName: "Forms demo",
-    serviceUrl: "/",
+    ariaLabel: "Forms demo",
+    slots: { start: serviceHeading },
     navigation: navigation
   }) }}
 {% endblock %}

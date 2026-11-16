@@ -99,6 +99,18 @@ To run the application in `development` mode run:
 npm run dev
 ```
 
+### Signing out
+
+Signed-in users can use the **Sign out** button in the page header. It clears the
+application session and redirects through the identity provider's discovered
+`end_session_endpoint`, then back to the application homepage. The provider must
+allow the homepage URL (the origin of `OIDC_REDIRECT_URI` followed by `/`) as a
+post-logout redirect. The local Defra ID stub already supports this flow.
+
+Sign-out uses a CSRF-protected POST. If provider discovery or logout URL creation
+fails, the application clears its local session and reports an error; the provider
+session may still be active.
+
 ### Local submission viewer
 
 The read-only submission dashboard shows totals, recent submissions and

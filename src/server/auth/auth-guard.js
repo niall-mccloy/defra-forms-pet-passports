@@ -7,13 +7,20 @@ import { isCertifiedVet } from './certification-lookup.js'
  * @param {ResponseToolkit} h
  */
 export async function authGuard(request, h) {
-  if (request.params.slug !== 'order-pet-passports') {
+  const isOrderForm = request.params.slug === 'order-pet-passports'
+  const isSubmissions =
+    request.path === '/submissions' || request.path.startsWith('/submissions/')
+  if (!isOrderForm && !isSubmissions) {
     return h.continue
   }
 
   const user = request.yar.get('user')
 
   if (!user) {
+    request.yar.set(
+      'loginReturnTo',
+      isSubmissions ? '/submissions' : '/order-pet-passports'
+    )
     return h.redirect('/auth/login').takeover()
   }
 
@@ -29,13 +36,25 @@ export async function authGuard(request, h) {
   const allowed = user.roles.some((entry) => {
     if (typeof entry !== 'string') return false
 
-    const parts = entry.split(':')
-    return (
-      parts.length === 3 &&
-      parts[0] === user.currentRelationshipId &&
-      parts[1].toLowerCase() === 'vet' &&
-      parts[2].toLowerCase() === 'complete'
-    )
+    if (isOrderForm) {
+      const parts = entry.split(':')
+      return (
+        parts.length === 3 &&
+        parts[0] === user.currentRelationshipId &&
+        parts[1].toLowerCase() === 'vet' &&
+        parts[2].toLowerCase() === 'complete'
+      )
+    }
+    if (isSubmissions) {
+      const parts = entry.split(':')
+      return (
+        parts.length === 3 &&
+        parts[0] === user.currentRelationshipId &&
+        parts[1].toLowerCase() === 'admin' &&
+        parts[2].toLowerCase() === 'complete'
+      )
+    }
+    return false
   })
 
   if (!allowed) {
@@ -47,16 +66,20 @@ export async function authGuard(request, h) {
     return Boom.forbidden()
   }
 
-  let certified
-
-  try {
-    certified = await isCertifiedVet(user.sub, user.currentRelationshipId)
-  } catch (err) {
-    request.logger.error({ err: err }, 'Certification lookup failed')
-    return Boom.serverUnavailable('Unable to check vet certification')
+  if (request.params.slug === 'order-pet-passports') {
+    try {
+      const certified = await isCertifiedVet(
+        user.sub,
+        user.currentRelationshipId
+      )
+      return certified ? h.continue : Boom.forbidden()
+    } catch (err) {
+      request.logger.error({ err: err }, 'Certification lookup failed')
+      return Boom.serverUnavailable('Unable to check vet certification')
+    }
   }
 
-  return certified ? h.continue : Boom.forbidden()
+  return h.continue
 }
 
 /**
