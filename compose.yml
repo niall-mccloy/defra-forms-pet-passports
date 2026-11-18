@@ -32,16 +32,6 @@ services:
     networks:
       - cdp-tenant
 
-  mongodb:
-    image: mongo:6.0.13
-    networks:
-      - cdp-tenant
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongodb-data:/data
-    restart: always
-
 ################################################################################
 
   your-frontend:
@@ -89,9 +79,6 @@ services:
   #     - cdp-tenant
 
 ################################################################################
-
-volumes:
-  mongodb-data:
 
 networks:
   cdp-tenant:

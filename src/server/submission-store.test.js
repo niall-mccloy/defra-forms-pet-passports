@@ -1,144 +1,135 @@
-import { ObjectId } from 'mongodb'
+import fetchMock from 'jest-fetch-mock'
 
-jest.mock('mongodb', () => ({
-  ...jest.requireActual('mongodb'),
-  MongoClient: jest.fn()
-}))
+import {
+  getSubmission,
+  getSubmissionReport,
+  listFormSubmissions,
+  listSubmissions,
+  saveSubmission
+} from './submission-store.js'
 
-describe('submission store', () => {
-  let store
-  let collection
-  let cursor
-  let connect
-  let db
-  const originalUri = process.env.MONGODB_URI
-  const originalDatabase = process.env.MONGODB_DATABASE
+describe('submission backend client', () => {
+  const originalUrl = process.env.PET_PASSPORT_BACKEND_URL
+  const baseUrl = 'http://127.0.0.1:3001'
 
-  beforeEach(async () => {
-    const { MongoClient } = await import('mongodb')
-    process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017'
-    delete process.env.MONGODB_DATABASE
-    collection = {
-      insertOne: jest.fn().mockResolvedValue({ acknowledged: true }),
-      find: jest.fn(),
-      findOne: jest.fn(),
-      countDocuments: jest.fn(),
-      aggregate: jest.fn()
-    }
-    cursor = {
-      sort: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      toArray: jest.fn().mockResolvedValue([])
-    }
-    collection.find.mockReturnValue(cursor)
-    connect = jest.fn().mockResolvedValue(undefined)
-    db = jest.fn().mockReturnValue({
-      collection: jest.fn().mockReturnValue(collection)
-    })
-    MongoClient.mockImplementation(() => ({ connect, db }))
-    store = await import('./submission-store.js')
+  beforeEach(() => {
+    process.env.PET_PASSPORT_BACKEND_URL = baseUrl
+    fetchMock.resetMocks()
   })
 
   afterEach(() => {
-    if (originalUri === undefined) {
-      delete process.env.MONGODB_URI
+    if (originalUrl === undefined) {
+      delete process.env.PET_PASSPORT_BACKEND_URL
     } else {
-      process.env.MONGODB_URI = originalUri
+      process.env.PET_PASSPORT_BACKEND_URL = originalUrl
     }
-    if (originalDatabase === undefined) {
-      delete process.env.MONGODB_DATABASE
-    } else {
-      process.env.MONGODB_DATABASE = originalDatabase
+  })
+
+  test('sends the unchanged document as JSON and returns its backend ID', async () => {
+    const document = {
+      schemaVersion: 1,
+      submittedAt: '2026-11-11T12:00:00.000Z',
+      form: { id: 'form-1' },
+      answers: [{ name: 'quantity', value: 10 }]
     }
-    jest.resetModules()
-  })
-
-  test('preserves writes and reuses the connection for reads', async () => {
-    const document = { answers: [], submittedAt: '2026-11-11T12:00:00Z' }
-    await expect(store.saveSubmission(document)).resolves.toEqual({
-      acknowledged: true
+    fetchMock.mockResponseOnce(JSON.stringify({ id: 'submission-id' }), {
+      status: 201
     })
-    await store.listSubmissions(1)
-    expect(collection.insertOne).toHaveBeenCalledWith(document)
-    expect(connect).toHaveBeenCalledTimes(1)
-    expect(db).toHaveBeenCalledWith('pet_passports')
-  })
-
-  test('uses the configured database', async () => {
-    process.env.MONGODB_DATABASE = 'viewer_test'
-    await store.listSubmissions(1)
-    expect(db).toHaveBeenCalledWith('viewer_test')
-  })
-
-  test('reads 25 summaries with a next-page sentinel and stable ordering', async () => {
-    const documents = Array.from({ length: 26 }, (_, index) => ({ index }))
-    cursor.toArray.mockResolvedValue(documents)
-    await expect(store.listSubmissions(2)).resolves.toEqual({
-      submissions: documents.slice(0, 25),
-      hasNextPage: true
+    await expect(saveSubmission(document)).resolves.toEqual({
+      id: 'submission-id'
     })
-    expect(collection.find).toHaveBeenCalledWith(
-      {},
-      { projection: { form: 1, submittedAt: 1 } }
+    const [url, options] = fetchMock.mock.calls[0]
+    expect(String(url)).toBe(`${baseUrl}/submissions`)
+    expect(options).toEqual(
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(document),
+        signal: expect.any(AbortSignal)
+      })
     )
-    expect(cursor.sort).toHaveBeenCalledWith({ submittedAt: -1, _id: -1 })
-    expect(cursor.skip).toHaveBeenCalledWith(25)
-    expect(cursor.limit).toHaveBeenCalledWith(26)
   })
 
-  test.each([0, 25])('has no next page with %i results', async (length) => {
-    cursor.toArray.mockResolvedValue(Array.from({ length }, () => ({})))
-    expect((await store.listSubmissions(1)).hasNextPage).toBe(false)
+  test('preserves string IDs and pagination from the backend', async () => {
+    const result = {
+      submissions: [{ _id: '507f1f77bcf86cd799439011' }],
+      hasNextPage: true
+    }
+    fetchMock.mockResponseOnce(JSON.stringify(result))
+    await expect(listSubmissions(2)).resolves.toEqual(result)
+    expect(String(fetchMock.mock.calls[0][0])).toBe(
+      `${baseUrl}/submissions?page=2`
+    )
   })
 
-  test('looks up a detail by ObjectId and returns missing records as null', async () => {
+  test.each([
+    ['form/with spaces', '/submissions/forms/form%2Fwith%20spaces?page=3'],
+    [null, '/submissions/unattributed?page=3']
+  ])('routes form filter %s to the correct endpoint', async (formId, path) => {
+    fetchMock.mockResponseOnce(
+      JSON.stringify({ submissions: [], count: 0, hasNextPage: false })
+    )
+    await listFormSubmissions(formId, 3)
+    expect(String(fetchMock.mock.calls[0][0])).toBe(`${baseUrl}${path}`)
+  })
+
+  test('passes the report timestamp and returns the report unchanged', async () => {
+    const now = new Date('2026-03-29T12:00:00.000Z')
+    const report = { totals: { submissions: 2 }, forms: [], recent: [] }
+    fetchMock.mockResponseOnce(JSON.stringify(report))
+    await expect(getSubmissionReport(now)).resolves.toEqual(report)
+    const url = new URL(fetchMock.mock.calls[0][0])
+    expect(url.pathname).toBe('/submissions/report')
+    expect(url.searchParams.get('now')).toBe(now.toISOString())
+  })
+
+  test('retrieves a detail and maps only a missing detail to null', async () => {
     const id = '507f1f77bcf86cd799439011'
-    collection.findOne.mockResolvedValue(null)
-    await expect(store.getSubmission(id)).resolves.toBeNull()
-    expect(collection.findOne).toHaveBeenCalledWith({ _id: new ObjectId(id) })
+    fetchMock.mockResponseOnce(JSON.stringify({ _id: id, answers: [] }))
+    await expect(getSubmission(id)).resolves.toEqual({ _id: id, answers: [] })
+    expect(String(fetchMock.mock.calls[0][0])).toBe(
+      `${baseUrl}/submissions/${id}`
+    )
+    fetchMock.mockResponseOnce('', { status: 404 })
+    await expect(getSubmission(id)).resolves.toBeNull()
   })
 
   test.each(['bad-id', 'abcdefghijklmnopqrstuvwx', '123'])(
-    'rejects malformed ID %s without querying MongoDB',
+    'rejects malformed ID %s without contacting the backend',
     async (id) => {
-      await expect(store.getSubmission(id)).resolves.toBeNull()
-      expect(collection.findOne).not.toHaveBeenCalled()
+      await expect(getSubmission(id)).resolves.toBeNull()
+      expect(fetchMock).not.toHaveBeenCalled()
     }
   )
 
-  test('reports missing connection configuration', async () => {
-    delete process.env.MONGODB_URI
-    await expect(store.listSubmissions(1)).rejects.toThrow(
-      'MONGODB_URI not set'
+  test('reports missing backend configuration', async () => {
+    delete process.env.PET_PASSPORT_BACKEND_URL
+    await expect(listSubmissions(1)).rejects.toThrow(
+      'PET_PASSPORT_BACKEND_URL not set'
     )
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  test('propagates connection failures and permits a retry', async () => {
-    connect.mockRejectedValueOnce(new Error('Connection failed'))
-    await expect(store.listSubmissions(1)).rejects.toThrow('Connection failed')
-    await expect(store.listSubmissions(1)).resolves.toEqual({
-      submissions: [],
-      hasNextPage: false
-    })
-    expect(connect).toHaveBeenCalledTimes(2)
+  test.each([400, 404, 500])(
+    'surfaces HTTP %i rather than returning an empty list',
+    async (status) => {
+      fetchMock.mockResponseOnce('{}', { status })
+      await expect(listSubmissions(1)).rejects.toThrow(`(${status})`)
+    }
+  )
+
+  test('does not retry failed writes', async () => {
+    fetchMock.mockRejectOnce(new Error('Connection lost'))
+    await expect(saveSubmission({ answers: [] })).rejects.toThrow(
+      'Connection lost'
+    )
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
-  test('propagates query failures', async () => {
-    cursor.toArray.mockRejectedValue(new Error('Query failed'))
-    await expect(store.listSubmissions(1)).rejects.toThrow('Query failed')
-  })
-
-  test('propagates reporting and filtered-count failures', async () => {
-    collection.aggregate.mockReturnValue({
-      toArray: jest.fn().mockRejectedValue(new Error('Aggregation failed'))
-    })
-    collection.countDocuments.mockRejectedValue(new Error('Count failed'))
-    await expect(store.getSubmissionReport()).rejects.toThrow(
-      'Aggregation failed'
-    )
-    await expect(store.listFormSubmissions('form-id', 1)).rejects.toThrow(
-      'Count failed'
-    )
+  test('propagates timeouts and invalid backend JSON', async () => {
+    fetchMock.mockRejectOnce(new DOMException('Timed out', 'TimeoutError'))
+    await expect(listSubmissions(1)).rejects.toThrow('Timed out')
+    fetchMock.mockResponseOnce('not JSON')
+    await expect(listSubmissions(1)).rejects.toThrow()
   })
 })

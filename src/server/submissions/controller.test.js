@@ -23,7 +23,7 @@ const originalEnv = config.get('env')
 const originalEnabled = config.get('submissionViewerEnabled')
 const id = new ObjectId('507f1f77bcf86cd799439011')
 const metadata = {
-  _id: id,
+  _id: id.toHexString(),
   form: { title: 'Order pet passports' },
   submittedAt: '2026-11-11T12:00:00.000Z'
 }

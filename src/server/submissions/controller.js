@@ -38,7 +38,7 @@ function getPage(query) {
 
 function summary(submission) {
   return {
-    id: submission._id.toHexString(),
+    id: submission._id,
     title: formLabel(submission.form, 'Unknown form'),
     submittedAt:
       submission.submittedAt instanceof Date
@@ -167,7 +167,7 @@ export const submissionController = {
         pageTitle: 'Submission details',
         detailBackLink: backLink,
         submission: {
-          id: submission._id.toHexString(),
+          id: submission._id,
           form: submission.form,
           submittedAt: summary(submission).submittedAt,
           answers: submission.answers.map(formatAnswer)

@@ -99,6 +99,38 @@ To run the application in `development` mode run:
 npm run dev
 ```
 
+### Local submission viewer
+
+Submission storage and reporting are provided by the separate pet passport
+backend. Start that application's MongoDB instance and run `npm run dev` in the
+backend before submitting forms or using the submission viewer.
+
+Configure the forms application's environment:
+
+```dotenv
+PET_PASSPORT_BACKEND_URL=http://127.0.0.1:3001
+```
+
+Only the backend needs `MONGODB_URI` and `MONGODB_DATABASE`. Point it at the
+existing database to retain access to existing submissions. The backend returns
+MongoDB IDs as JSON strings. Backend failures are surfaced rather than falling
+back to direct database access; writes are not automatically retried.
+
+For a local MongoDB instance, the backend environment is:
+
+```dotenv
+MONGODB_URI=mongodb://127.0.0.1:27017
+MONGODB_DATABASE=pet_passports
+```
+
+The backend's `npm run dev` command loads its `.env` file. `npm start` expects
+variables to be supplied by the environment. Its `npm test` command runs store
+and route tests; set `TEST_MONGODB_URI=mongodb://127.0.0.1:27017` to also run
+reporting integration tests in a temporary database.
+
+The backend binds to loopback for local development. Do not expose its submission
+endpoints outside the local machine without authentication and authorisation.
+
 ### Signing out
 
 Signed-in users can use the **Sign out** button in the page header. It clears the
@@ -110,60 +142,6 @@ post-logout redirect. The local Defra ID stub already supports this flow.
 Sign-out uses a CSRF-protected POST. If provider discovery or logout URL creation
 fails, the application clears its local session and reports an error; the provider
 session may still be active.
-
-### Local submission viewer
-
-The read-only submission dashboard shows totals, recent submissions and
-submission counts by form, with links to paginated form-specific lists and
-individual submissions, including nested answers. The existing all-submissions
-viewer remains available, with 25 submissions per page. There is no editing or
-export functionality.
-
-The form count includes distinct non-empty form IDs found in saved submissions,
-including historical forms, not configured forms without submissions.
-Submissions without a usable form ID are shown separately and included in
-submission totals. Today, this week (from Monday) and this month are calendar
-periods in UK time up to the time the dashboard is loaded; future timestamps
-and missing or invalid timestamps are excluded from those period counts but
-remain in all-time totals. Counts are live reads and can change between pages.
-
-Start MongoDB (for example, `docker compose up -d mongodb`) and set these values
-in your local `.env` file:
-
-```dotenv
-NODE_ENV=development
-ENABLE_SUBMISSION_VIEWER=true
-MONGODB_URI=mongodb://127.0.0.1:27017
-MONGODB_DATABASE=pet_passports
-```
-
-Run `npm run dev`, then visit <http://127.0.0.1:3000/submissions/dashboard>
-or use the homepage's "View submission dashboard" link. The existing viewer is
-at <http://127.0.0.1:3000/submissions>. Use the same database settings as your
-form submissions; `MONGODB_DATABASE` defaults to `pet_passports`.
-
-The flag defaults to false. Routes and the homepage link are only enabled in
-development with the flag set, and enabling the viewer binds the whole app to
-`127.0.0.1`. It is intended for running the app directly on your computer, not
-through Docker port forwarding or another device. No sign-in is required:
-use only local test data, and do not deploy this viewer or expose it through a
-proxy/tunnel. Existing form sign-in requirements are unchanged.
-
-Database failures produce the application's normal error page and server log,
-not an empty submissions list. Viewing submissions does not modify them.
-For larger datasets, review MongoDB indexes on `submittedAt` and on
-`form.id`, `submittedAt`, and `_id` together; this POC does not create indexes
-automatically. The dashboard aggregates live data and is intended for small
-local datasets.
-
-To run the MongoDB reporting integration tests against a local MongoDB instance:
-
-```bash
-TEST_MONGODB_URI=mongodb://127.0.0.1:27017 node --test test/submission-report.integration.js
-```
-
-The tests create and remove a uniquely named test collection in a dedicated
-temporary database. They do not use the configured submissions database.
 
 ### Production
 
@@ -239,7 +217,6 @@ A local environment with:
 
 - Localstack for AWS services (S3, SQS)
 - Redis
-- MongoDB
 - This service.
 - A commented out backend example.
 
